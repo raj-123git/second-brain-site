@@ -1,0 +1,112 @@
+.measured-scene,
+.measured-still {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+  overflow: hidden;
+  opacity: 1;
+  contain: strict;
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--ink, #17191f) 4%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--ink, #17191f) 4%, transparent) 1px, transparent 1px);
+  background-size: 36px 36px;
+}
+
+.measured-scene[hidden] { display: none; }
+
+.measured-still > svg {
+  position: absolute;
+  width: 48vw;
+  height: var(--still-height, 70vh);
+  right: 0;
+  top: var(--still-y, 53%);
+  transform: translateY(-50%);
+  overflow: visible;
+  fill: var(--bg, #f7f5f0);
+  stroke: var(--ink, #17191f);
+  stroke-width: 1.6;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.measured-still path,
+.measured-still circle { vector-effect: non-scaling-stroke; }
+.measured-still .ms-metal { fill: color-mix(in srgb, var(--bg, #f7f5f0) 67%, var(--ink, #17191f)); }
+.measured-still .ms-shade { fill: color-mix(in srgb, var(--bg, #f7f5f0) 42%, var(--ink, #17191f)); }
+.measured-still .ms-top .ms-metal { fill: color-mix(in srgb, var(--bg, #f7f5f0) 82%, var(--ink, #17191f)); }
+.measured-still .ms-dimensions { stroke-width: 1.1; }
+.measured-still .ms-assembly { transform-origin: 300px 220px; }
+.measured-still :is(.ms-gate, .ms-panel, .ms-leaders, .ms-system, .ms-life, .ms-sheets) { display: none; }
+.measured-still .ms-component { fill: color-mix(in srgb, var(--bg, #f7f5f0) 72%, var(--ink, #17191f)); }
+.measured-still .ms-selected { stroke: var(--accent, #0b5cad); stroke-width: 2.4; }
+.measured-still .ms-selected .ms-component { fill: color-mix(in srgb, var(--bg, #f7f5f0) 60%, var(--accent, #0b5cad)); }
+
+.measured-still[data-scene-state="about"] .ms-assembly { transform: rotate(-12deg) scale(.96); }
+.measured-still[data-scene-state="combination"] .ms-top { transform: translate(8px, -60px); }
+.measured-still[data-scene-state="combination"] .ms-middle { transform: translate(-12px, -20px); }
+.measured-still[data-scene-state="skills"] .ms-assembly { transform: scale(.84); }
+.measured-still[data-scene-state="skills"] .ms-leaders { display: inline; }
+.measured-still[data-scene-state="systems"] .ms-system,
+.measured-still[data-scene-state="life"] .ms-life,
+.measured-still[data-scene-state="os"] .ms-sheets,
+.measured-still[data-scene-state="inspection"] .ms-gate,
+.measured-still[data-scene-state="contact"] .ms-panel { display: inline; }
+.measured-still:is([data-scene-state="systems"], [data-scene-state="life"], [data-scene-state="os"]) .ms-assembly { display: none; }
+.measured-still[data-scene-state="inspection"] .ms-assembly { transform: translateY(-58px) scale(.78); }
+.measured-still[data-scene-state="operator"] .ms-assembly { transform: rotate(8deg) skewY(-5deg); }
+.measured-still[data-scene-state="how"] .ms-assembly { transform: rotate(15deg) scale(.9); }
+.measured-still[data-scene-state="life"] .ms-life { transform: translate(30px, 25px) rotate(-5deg); transform-origin: 300px 220px; }
+.measured-still[data-scene-state="hobbies"] .ms-assembly { transform: rotate(-18deg) skewX(7deg); }
+.measured-still[data-scene-state="hobbies"] .ms-top { transform: translateY(-25px); }
+.measured-still[data-scene-state="contact"] .ms-assembly { transform: translate(-125px, -16px) scale(.33); }
+.measured-still[data-scene-state="contact"] .ms-dimensions { display: none; }
+
+@media (prefers-color-scheme: dark) {
+  .measured-scene,
+  .measured-still { opacity: .96; }
+}
+
+@media (max-width: 999px) {
+  .hero::after {
+    content: "";
+    display: block;
+    grid-column: 1 / -1;
+    height: min(50svh, 28rem);
+    pointer-events: none;
+  }
+  .measured-still > svg {
+    width: 96vw;
+    right: 2vw;
+    top: var(--still-y, 74%);
+    height: var(--still-height, 44vh);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .measured-scene,
+  .measured-still,
+  .measured-still * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .measured-scene,
+  .measured-still { display: none; }
+  .hero::after { display: none; }
+}
+
+@media print {
+  .measured-scene,
+  .measured-still { display: none; }
+  .hero::after { display: none; }
+}
+
+/* integration: the drawing steps back behind the wide grid sections and stays full strength for the story moments */
+.measured-scene[data-scene-state="systems"], .measured-scene[data-scene-state="skills"], .measured-scene[data-scene-state="life"], .measured-still[data-scene-state="systems"], .measured-still[data-scene-state="skills"], .measured-still[data-scene-state="life"] { opacity: 0.5; }

@@ -375,3 +375,15 @@ details.more[open] > summary::after { content: "\2212"; }
 details.more > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
 details.more > :not(summary) { margin-top: 0.6rem; }
 details.more p { font-size: var(--t-sm); color: var(--ink-2); }
+
+/* Proof chips (Raj, 2026-09-05: show the work, not just words) */
+.proof { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; margin: 0.8rem 0 0; font-size: var(--t-xs); }
+.proof-label { font-family: var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); margin-right: 0.2rem; }
+.proof a { display: inline-block; padding: 0.22rem 0.6rem; border: 1px solid var(--line); border-radius: 999px; background: var(--surface-2); color: var(--accent); text-decoration: none; font-weight: 600; }
+.proof a:hover { border-color: var(--accent); }
+
+.badges { display: flex; flex-wrap: wrap; gap: 0.35rem; margin: -0.2rem 0 0.6rem; }
+.badges span { font-family: var(--mono); font-size: var(--t-xs); letter-spacing: 0.02em; padding: 0.15rem 0.5rem; border-radius: 6px; background: var(--surface-2); border: 1px solid var(--line); color: var(--ink-2); }
+
+/* scene coexistence (2026-09-05): content surfaces go near-opaque so text never sits on drawing lines */
+.card, .skills > div, .legs li, #contact .ask, .contact-actions .btn-ghost, .hero-actions .btn-ghost { background: var(--panel, var(--surface-2)); }

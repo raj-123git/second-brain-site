@@ -282,10 +282,11 @@ h2.statement { font-style: italic; font-weight: 400; line-height: 1.25; max-widt
 
 /* ---------- artifact cards (the projects analog) ---------- */
 .grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr)); margin-top: 1.6rem; }
-.card { display: grid; grid-template-rows: auto 1fr; gap: 0.9rem; padding: 1.25rem; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow); min-width: 0; }
-.card-art { display: grid; place-items: center; height: 5.5rem; border-radius: 10px; background: linear-gradient(135deg, var(--surface-2), transparent); color: var(--accent); }
-.card-art svg { width: 2.6rem; height: 2.6rem; }
-.card h3 { font-size: var(--t-1); line-height: 1.25; margin: 0 0 0.5rem; }
+.card { display: grid; grid-template-rows: auto 1fr; gap: 0.75rem; padding: 1.1rem 1.15rem 1.2rem; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow); min-width: 0; }
+.card-head { display: flex; align-items: center; gap: 0.7rem; }
+.card-art { display: grid; place-items: center; flex: none; width: 2.5rem; height: 2.5rem; border-radius: 10px; background: linear-gradient(135deg, var(--surface-2), transparent); border: 1px solid var(--line); color: var(--accent); }
+.card-art svg { width: 1.35rem; height: 1.35rem; }
+.card h3 { font-size: var(--t-1); line-height: 1.25; margin: 0; }
 .card .placeholder { font-size: var(--t-sm); }
 .card p { color: var(--ink-2); font-size: var(--t-sm); overflow-wrap: anywhere; }
 
@@ -382,8 +383,8 @@ details.more p { font-size: var(--t-sm); color: var(--ink-2); }
 .proof a { display: inline-block; padding: 0.22rem 0.6rem; border: 1px solid var(--line); border-radius: 999px; background: var(--surface-2); color: var(--accent); text-decoration: none; font-weight: 600; }
 .proof a:hover { border-color: var(--accent); }
 
-.badges { display: flex; flex-wrap: wrap; gap: 0.35rem; margin: -0.2rem 0 0.6rem; }
-.badges span { font-family: var(--mono); font-size: var(--t-xs); letter-spacing: 0.02em; padding: 0.15rem 0.5rem; border-radius: 6px; background: var(--surface-2); border: 1px solid var(--line); color: var(--ink-2); }
+.badges { display: flex; flex-wrap: wrap; gap: 0.3rem; margin: -0.1rem 0 0.55rem; }
+.badges span { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0; padding: 0.1rem 0.45rem; border-radius: 6px; background: var(--surface-2); border: 1px solid var(--line); color: var(--ink-2); }
 
 /* ---------- constellation life (2026-09-05): draw-in, packets, gate stops, hover ---------- */
 @keyframes draw-edge { to { stroke-dashoffset: 0; } }
@@ -431,3 +432,12 @@ html.is-hidden .constellation-wrap .drift { animation-play-state: paused; }
   .map .tilt { transform: none !important; transition: none; }
   .map .depth { transform: translateZ(-30px); }
 }
+
+/* four-line cards (2026-09-05): problem / what it does / the rule / evidence.
+   Labels run in-line as small tags so the text keeps the full card width (compact pass, same day). */
+.card .facts { margin: 0; display: grid; gap: 0.5rem; }
+.card .facts div { display: block; font-size: var(--t-sm); line-height: 1.45; color: var(--ink-2); overflow-wrap: anywhere; }
+.card .facts dt { display: inline-block; vertical-align: 0.08em; font-family: var(--mono); font-size: 0.66rem; line-height: 1.4; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); background: var(--surface-2); border: 1px solid var(--line); border-radius: 5px; padding: 0.02rem 0.42rem; margin-right: 0.4rem; white-space: nowrap; }
+.card .facts dd { display: inline; margin: 0; }
+.card .facts div:first-child dd { color: var(--ink); }
+.card .facts div:last-child dt { color: var(--accent); border-color: var(--accent); background: transparent; }

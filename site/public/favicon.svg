@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="14" fill="#0b1220"/>
+  <text x="30" y="46" font-family="Palatino Linotype, Palatino, Georgia, 'Times New Roman', serif" font-size="40" font-weight="700" fill="#e9ecf3" text-anchor="middle">R</text>
+  <line x1="42" y1="18" x2="50" y2="14" stroke="#8b94a7" stroke-width="2"/>
+  <circle cx="51" cy="13" r="5" fill="#0b1220" stroke="#93c8ff" stroke-width="2.6"/>
+</svg>

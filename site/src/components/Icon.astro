@@ -1,0 +1,49 @@
+---
+// Inline line icons (24-unit grid, 1.6 stroke). No icon font, no sprite request: each use is a
+// few path strings in the HTML. Decorative by default (aria-hidden); the surrounding text labels them.
+// Unknown names render the generic "artifact" mark, so a new card id never produces an empty box.
+interface Props { name: string; class?: string }
+const { name, class: cls } = Astro.props;
+const ICONS: Record<string, string[]> = {
+  // section glyphs + combination legs
+  customer: ["M12.5 8a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0", "M3 20a6 6 0 0 1 12 0", "M16 4.5a3.5 3.5 0 0 1 0 7", "M17.5 14.5a5.5 5.5 0 0 1 3.5 5.5"],
+  sales: ["M20 12a8 8 0 1 1-16 0 8 8 0 0 1 16 0", "M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0", "M12 4V2M12 22v-2M4 12H2M22 12h-2"],
+  workflow: ["M6 5v2a4 4 0 0 0 4 4h8", "M14 7l4 4-4 4", "M6 11v10", "M8 3a2 2 0 1 1-4 0 2 2 0 0 1 4 0"],
+  ai: ["M12 3l1.8 4.7 4.7 1.8-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z", "M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"],
+  orchestration: ["M7 6a2 2 0 1 1-4 0 2 2 0 0 1 4 0M21 6a2 2 0 1 1-4 0 2 2 0 0 1 4 0M14 18a2 2 0 1 1-4 0 2 2 0 0 1 4 0M14 11a2 2 0 1 1-4 0 2 2 0 0 1 4 0", "M12 13v3M6.7 7.3l3.6 2.4M17.3 7.3l-3.6 2.4"],
+  verification: ["M12 3l7 3v5c0 5-3 8.5-7 10-4-1.5-7-5-7-10V6z", "M9 12l2 2 4-4"],
+  skills: ["M4 20v-7M9.5 20V4M15 20v-9M20.5 20v-4", "M2 20h20"],
+  hobbies: ["M2 20l6.5-11 4 6.5 2.5-3.5L21 20z", "M18.5 6.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"],
+  life: ["M20 12a8 8 0 1 1-16 0 8 8 0 0 1 16 0", "M15 9l-2 5-4 1 2-5z"],
+  os: ["M4 5h16v14H4z", "M7 9l3 3-3 3", "M12 15h5"],
+  // artifact cards (systems)
+  ops: ["M5 5h4v4H5zM15 5h4v4h-4zM5 15h4v4H5zM15 15h4v4h-4z", "M9 7h6M9 17h6M7 9v6M17 9v6"],
+  hitl: ["M12 3l7 3v5c0 5-3 8.5-7 10-4-1.5-7-5-7-10V6z", "M13.5 11a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0", "M12 12.5V16"],
+  evals: ["M9 4h6v2H9z", "M7 5H5v16h14V5h-2", "M9 13l2 2 4-4"],
+  voice: ["M3 12h2l2-5 3 10 3-12 2 7h3", "M18 9l3 3-3 3"],
+  integration: ["M12 3l9 5-9 5-9-5z", "M3 13l9 5 9-5", "M3 17l9 5 9-5"],
+  evaluating: ["M16 10a6 6 0 1 1-12 0 6 6 0 0 1 12 0", "M14.5 14.5L21 21", "M8 10h4"],
+  present: ["M6 3h12v18H6z", "M11 18h2", "M9 7h6M9 10.5h4"],
+  cube: ["M12 3l8 4.5v9L12 21l-8-4.5v-9z", "M12 12l8-4.5M12 12v9M12 12L4 7.5"],
+  package: ["M4 8l8-4 8 4v8l-8 4-8-4z", "M4 8l8 4 8-4", "M12 12v8", "M8 6l8 4"],
+  calendar: ["M4 6h16v14H4z", "M4 10h16", "M8 3v4M16 3v4", "M9 15.5l2 2 4-4"],
+  stamp: ["M7 21h10", "M5 17.5h14v-3.5H5z", "M12 14v-3", "M15.5 7.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0"],
+  star: ["M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"],
+  layers: ["M12 3l7 3v5c0 5-3 8.5-7 10-4-1.5-7-5-7-10V6z", "M9 10.5h6M9 14h6"],
+  // artifact cards (life)
+  chart: ["M4 20h16", "M5 16l4-5 4 3 6-8", "M19 6v4h-4"],
+  folder: ["M4 6h6l2 2h8v11H4z", "M9.5 14l2 2 4-4"],
+  leaf: ["M19 5c-9 0-14 5-14 13 8 0 13-5 14-13z", "M5 18l8-8"],
+  funnel: ["M4 5h16l-6 7v6l-4 2v-8z"],
+  artifact: ["M20 12a8 8 0 1 1-16 0 8 8 0 0 1 16 0", "M14.5 12a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0", "M12 4v5.5M12 14.5V20M4 12h5.5M14.5 12H20"],
+  // chrome
+  email: ["M3 6h18v12H3z", "M3 7l9 6 9-6"],
+  resume: ["M6 3h8l4 4v14H6z", "M14 3v4h4", "M9 12h6M9 16h6"],
+  "arrow-up": ["M12 19V5", "M5 12l7-7 7 7"],
+  grid: ["M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z"],
+};
+const paths = ICONS[name] ?? ICONS.artifact;
+---
+<svg class={cls} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+  {paths.map(d => <path d={d} />)}
+</svg>

@@ -1,0 +1,23 @@
+---
+// The About mark. No approved photograph exists, so the site's own motif stands in:
+// initials inside a ring with three orbiting nodes (agent, human gate, operator).
+// Contains no factual claim.
+const R = 74, C = 80;
+const pt = (deg: number, r: number) => ({ x: +(C + r * Math.cos((deg * Math.PI) / 180)).toFixed(1), y: +(C + r * Math.sin((deg * Math.PI) / 180)).toFixed(1) });
+const orbiters = [
+  { deg: -62, kind: "hub" },
+  { deg: 178, kind: "agent" },
+  { deg: 86, kind: "gate" },
+].map(o => ({ ...o, outer: pt(o.deg, R), inner: pt(o.deg, R - 12) }));
+---
+<svg class="monogram" viewBox="0 0 160 160" role="img" aria-label="R R monogram">
+  <circle class="ring" cx={C} cy={C} r={R} />
+  <circle class="orbit" cx={C} cy={C} r={R - 12} />
+  {orbiters.map(o => (
+    <g>
+      <line class="edge" x1={o.outer.x} y1={o.outer.y} x2={o.inner.x} y2={o.inner.y} />
+      <circle class={`node ${o.kind}`} cx={o.outer.x} cy={o.outer.y} r={o.kind === "hub" ? 7 : 5.5} />
+    </g>
+  ))}
+  <text x={C} y="99" text-anchor="middle">RR</text>
+</svg>

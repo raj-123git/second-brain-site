@@ -1,0 +1,141 @@
+---
+// Home page. Renders ONLY what src/data/sections.json carries. A section whose `approved`
+// flag is false shows a visible placeholder — nothing unapproved can pass for finished copy,
+// and the leak-check gate runs on every build regardless.
+// Production builds (astro build) show neutral "Site in progress." / "Coming soon." lines and
+// omit unapproved artifact cards; the internal review notes (slot id + ledger row numbers) exist
+// only in `astro dev`.
+import Base from "../layouts/Base.astro";
+import Constellation from "../components/Constellation.astro";
+import Flourish from "../components/Flourish.astro";
+import Icon from "../components/Icon.astro";
+import Monogram from "../components/Monogram.astro";
+import Ask from "../components/Ask.astro";
+import data from "../data/sections.json";
+
+type Artifact = { id: string; title: string; ledger_rows?: number[]; approved: boolean; content: string };
+type Slot = { id: string; eyebrow: string; title: string; ledger_rows?: number[]; approved: boolean; queue_row?: number | null; content: string; artifacts?: Artifact[] };
+const sections = data.sections as Slot[];
+const hero = sections.find(s => s.id === "hero")!;
+const rest = sections.filter(s => s.id !== "hero" && s.id !== "ask");
+const ask = sections.find(s => s.id === "ask");   // rendered inside Contact, only once approved
+const isReady = (s: { approved: boolean; content: string }) => s.approved && s.content.trim().length > 0;
+const internal = import.meta.env.DEV;
+const rows = (r?: number[]) => (r && r.length ? r.join(", ") : "none");
+// Presentation only (Raj, 2026-09-05: nobody reads long paragraphs). The first sentence of a slot's
+// first paragraph becomes its lead line; everything else folds behind "More". No new words: every
+// string below is a slice of approved queue text, so the publication firewall is untouched.
+const SENT = /(?<=[.!?])\s+(?=[A-Z"\u201c(])/;
+function teaser(html: string): { lead: string; rest: string } {
+  const m = /^\s*<p([^>]*)>([\s\S]*?)<\/p>([\s\S]*)$/.exec(html);
+  if (!m) return { lead: html, rest: "" };
+  const [, attrs, inner, after] = m;
+  const cls = /class="([^"]*)"/.exec(attrs)?.[1] ?? "";
+  const parts = inner.split(SENT);
+  const first = parts[0].trim();
+  const tail = parts.slice(1).join(" ").trim();
+  return { lead: `<p class="lead${cls ? " " + cls : ""}">${first}</p>`, rest: (tail ? `<p>${tail}</p>` : "") + after.trim() };
+}
+const NOFOLD = new Set(["contact", "skills"]);
+const heroM = /^\s*(<h1>[\s\S]*?<\/h1>)\s*([\s\S]*)$/.exec(hero.content) ?? [null, "", hero.content];
+const heroT = teaser(heroM[2]);
+const heroParts = { head: heroM[1] ?? "", lead: heroT.lead, rest: heroT.rest.replace(/^<p>|<\/p>$/g, "") };
+
+
+// Presentation-only lookups keyed by slot / artifact id. Unknown ids fall back gracefully (generic
+// layout, generic "artifact" icon, no nav entry), so a new slot in sections.json renders without
+// touching this file, and publish.py never needs to.
+const NAV_LABEL: Record<string, string> = { about: "About", skills: "Skills", systems: "Projects", operator: "Operator", how: "How I build", life: "AI in real life", os: "Personal AI OS", hobbies: "Hobbies" };
+const GLYPH: Record<string, string> = { systems: "orchestration", operator: "customer", how: "verification", life: "life", os: "os", skills: "skills", hobbies: "hobbies" };
+const ART_ICON: Record<string, string> = {
+  // systems
+  "ops-system": "ops", "hitl-safety": "hitl", evals: "evals", "voice-to-action": "voice", "integration-layer": "integration", "evaluating-tooling": "evaluating",
+  "sales-tool": "present", "field-app": "cube", backorder: "package", "scheduling-workorders": "calendar", "permit-lifecycle": "stamp", "post-job-followup": "star", "safety-layer": "layers",
+  // life
+  "market-monitor": "chart", "life-admin": "folder", "health-routine": "leaf", "job-aggregator": "funnel",
+};
+const LEG_ICONS = ["customer", "sales", "workflow", "ai", "orchestration", "verification"];
+const EMAIL = "rajranpariya22@gmail.com";
+const RESUME = "/Raj_Ranpariya_Resume.pdf";
+
+const nav = rest.filter(s => NAV_LABEL[s.id]).map(s => [`#${s.id}`, NAV_LABEL[s.id]] as [string, string]);
+const view = rest.map((s, i) => ({
+  s,
+  num: String(i + 1).padStart(2, "0"),
+  ready: isReady(s),
+  last: i === rest.length - 1,
+  // an unresolved "{{…}}" title means the slot has no heading of its own: the eyebrow stands in,
+  // so every section (and every nav target) still has an h2
+  title: s.title.startsWith("{{") ? s.eyebrow : s.title,
+  // the "combination" title is a × formula; it is rendered as six labelled legs (same words)
+  legs: s.id === "combination" && s.title.includes("×") ? s.title.split("×").map(t => t.trim()).filter(Boolean) : [],
+  cards: (s.artifacts ?? []).filter(a => internal || (a.approved && a.content)),
+}));
+---
+<Base title="Raj Ranpariya — HVAC Comfort Advisor & Project Manager who builds AI systems" description="HVAC comfort advisor and project manager who builds AI systems: technical sales for homes and commercial sites, projects from proposal to inspection, AI agents." nav={nav}>
+  <section class="hero" id="top">
+    <div class="hero-copy">
+      <p class="eyebrow">{hero.eyebrow}</p>
+      {isReady(hero)
+        ? <><Fragment set:html={heroParts.head} /><Fragment set:html={heroParts.lead} />{heroParts.rest && <p class="hero-sub" set:html={heroParts.rest} />}</>
+        : <>
+            <h1>Raj Ranpariya</h1>
+            <p class:list={["lede", "placeholder", { internal }]} data-slot="hero">{internal ? "hero — awaiting review (queue)" : "Site in progress."}</p>
+          </>}
+      <div class="hero-actions">
+        <a class="btn btn-primary" href={`mailto:${EMAIL}`}><Icon name="email" />Email</a>
+        <a class="btn btn-ghost" href="#about">About me</a>
+      </div>
+    </div>
+    <div class="hero-visual"><Constellation /></div>
+  </section>
+  <Flourish />
+
+  {view.map(({ s, num, ready, last, title, legs, cards }) => (
+    <>
+      <section id={s.id} class:list={["sec", { wide: s.id === "systems" || s.id === "skills" || legs.length > 0 || cards.length > 0, about: s.id === "about", contact: s.id === "contact", "skills-sec": s.id === "skills", "combination-sec": legs.length > 0, hobbies: s.id === "hobbies" }]}>
+        {s.id === "about" && <Monogram />}
+        <div class="sec-head">
+          <p class="eyebrow"><span class="num">{num}</span>{GLYPH[s.id] && <Icon name={GLYPH[s.id]} class="glyph" />}<span>{s.eyebrow}</span></p>
+          {legs.length > 0
+            ? <>
+                <h2 class="sr-only">{legs.join(", ")}</h2>
+                <ul class="legs" aria-hidden="true">{legs.map((leg, k) => <li><Icon name={LEG_ICONS[k % LEG_ICONS.length]} class="glyph" /><span class="leg-label">{leg}</span></li>)}</ul>
+              </>
+            : <h2 class:list={{ statement: s.id === "how" }}>{title}</h2>}
+        </div>
+        <div class="sec-body">
+          {ready
+            ? (NOFOLD.has(s.id) ? <Fragment set:html={s.content} /> : <><Fragment set:html={teaser(s.content).lead} />{teaser(s.content).rest && <details class="more"><summary>More</summary><Fragment set:html={teaser(s.content).rest} /></details>}</>)
+            : <p class:list={["placeholder", { internal }]} data-slot={s.id}>{internal ? `${s.id} — awaiting review · ledger rows ${rows(s.ledger_rows)}` : "Coming soon."}</p>}
+        </div>
+        {cards.length > 0 && (
+          <div class="grid">
+            {cards.map(a => (
+              <article class="card" id={`artifact-${a.id}`}>
+                <div class="card-art"><Icon name={ART_ICON[a.id] ?? "artifact"} /></div>
+                <div>
+                  <h3>{a.title}</h3>
+                  {a.approved && a.content
+                    ? <><Fragment set:html={teaser(a.content).lead} />{teaser(a.content).rest && <details class="more"><summary>More</summary><Fragment set:html={teaser(a.content).rest} /></details>}</>
+                    : <p class:list={["placeholder", { internal }]} data-slot={`artifact-${a.id}`}>awaiting review · rows {rows(a.ledger_rows)}</p>}
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+        {s.id === "contact" && (
+          <>
+            <div class="contact-actions">
+              <a class="btn btn-primary btn-lg" href={`mailto:${EMAIL}`}><Icon name="email" />Email</a>
+              <a class="btn btn-ghost btn-lg" href={RESUME} type="application/pdf" target="_blank" rel="noopener"><Icon name="resume" />PDF Résumé<span class="sr-only"> (opens in a new tab)</span></a>
+            </div>
+            <p class="contact-email"><a href={`mailto:${EMAIL}`}>{EMAIL}</a></p>
+            {ask && isReady(ask) && <Ask intro={ask.content} email={EMAIL} />}
+          </>
+        )}
+      </section>
+      {!last && <Flourish />}
+    </>
+  ))}
+</Base>

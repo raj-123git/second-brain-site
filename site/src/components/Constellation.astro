@@ -1,0 +1,121 @@
+---
+// Agent / orchestration constellation — the site's primary visual (pack §F).
+// This is the 2D SVG version: it IS the mobile and reduced-motion experience, and the
+// fallback the Phase 4 Three.js scene mounts over on capable desktops (#constellation-3d).
+// Labels are capability nouns, never internal agent or product names (ledger rows 6–7).
+//
+// One node/edge graph, two drawings of it. The landscape map is the source geometry. The
+// portrait map is the same graph rotated a quarter turn and then nudged node by node, because
+// a horizontal label that clears every edge in one orientation does not in the other. Each node
+// carries a label side per view (n/ne/e/se/s/sw/w/nw plus a small offset); the build harness
+// samples every edge against every label box and requires zero intersections at 390 and 1280.
+type Side = "n" | "ne" | "e" | "se" | "s" | "sw" | "w" | "nw";
+type Place = [Side, number, number];                 // side, x offset, y offset (SVG units)
+type Node = { id: string; x: number; y: number; label: string; kind: "hub" | "agent" | "gate"; l: Place; p: [number, number, Side, number, number] };
+const nodes: Node[] = [
+  //  id        landscape x,y  label              kind      landscape label  portrait x,y + label
+  { id: "hub",    x: 300, y: 170, label: "operator",        kind: "hub",   l: ["w", -12, 6],  p: [210, 305, "nw", -6, -6] },
+  { id: "calls",  x: 120, y: 80,  label: "call handling",   kind: "agent", l: ["w", -6, 0],   p: [95, 535, "se", 0, 6] },
+  { id: "sched",  x: 200, y: 40,  label: "scheduling",      kind: "agent", l: ["n", 0, -6],   p: [10, 425, "e", 6, 6] },
+  { id: "work",   x: 330, y: 40,  label: "work orders",     kind: "agent", l: ["n", 0, -6],   p: [40, 290, "se", -6, 6] },
+  { id: "permit", x: 460, y: 70,  label: "permits",         kind: "agent", l: ["n", 0, -6],   p: [55, 210, "nw", 6, -6] },
+  { id: "acct",   x: 520, y: 170, label: "accounting",      kind: "agent", l: ["e", 6, 0],    p: [160, 125, "n", 0, -6] },
+  { id: "follow", x: 470, y: 270, label: "sales follow-up", kind: "agent", l: ["e", 6, 0],    p: [270, 150, "n", 12, -6] },
+  { id: "review", x: 340, y: 310, label: "reviews",         kind: "agent", l: ["s", 0, 6],    p: [310, 280, "nw", -6, 0] },
+  { id: "mkt",    x: 190, y: 300, label: "marketing",       kind: "agent", l: ["s", 0, 6],    p: [310, 430, "w", -6, 0] },
+  { id: "kpi",    x: 90,  y: 210, label: "reporting",       kind: "agent", l: ["w", -6, 0],   p: [210, 530, "e", 6, 0] },
+  { id: "gate1",  x: 400, y: 120, label: "human gate",      kind: "gate",  l: ["se", -12, 6], p: [120, 230, "n", 6, 0] },
+  { id: "gate2",  x: 250, y: 240, label: "human gate",      kind: "gate",  l: ["w", -6, -12], p: [280, 380, "sw", 6, 6] },
+  { id: "verify", x: 560, y: 60,  label: "external check",  kind: "gate",  l: ["n", 0, -6],   p: [60, 60, "n", 0, -6] },
+];
+const edges: [string, string][] = [
+  ["calls","sched"],["sched","work"],["work","permit"],["permit","acct"],["acct","follow"],
+  ["follow","review"],["review","mkt"],["mkt","kpi"],["kpi","calls"],
+  ["hub","calls"],["hub","sched"],["hub","work"],["hub","acct"],["hub","review"],["hub","mkt"],
+  ["work","gate1"],["gate1","permit"],["review","gate2"],["gate2","mkt"],["permit","verify"],
+];
+// The outer hand-off loop is the animated one; hub spokes and gate links stay still.
+const loop = new Set(["calls|sched","sched|work","work|permit","permit|acct","acct|follow","follow|review","review|mkt","mkt|kpi","kpi|calls"]);
+const capabilities = nodes.filter(n => n.kind === "agent").map(n => n.label).join(", ");
+const R = (k: Node["kind"]) => (k === "hub" ? 14 : k === "gate" ? 9 : 11);
+const GAP = 7;
+// Text position for a label side. The baseline is placed so the glyph box (ascent ≈ 0.85em,
+// descent ≈ 0.3em for the mono stack) sits fully on the chosen side of the node.
+function place(kind: Node["kind"], [side, ox, oy]: Place, fs: number) {
+  const dx = side.includes("e") ? 1 : side.includes("w") ? -1 : 0;
+  const dy = side.includes("s") ? 1 : side.includes("n") ? -1 : 0;
+  const k = dx && dy ? 0.8 : 1, d = (R(kind) + GAP) * k;
+  const cx = dx * d + ox, cy = dy * d + oy;
+  const y = dy < 0 ? cy - 0.3 * fs : dy > 0 ? cy + 0.85 * fs : cy + 0.35 * fs;
+  return { x: +cx.toFixed(1), y: +y.toFixed(1), anchor: dx > 0 ? "start" : dx < 0 ? "end" : "middle" };
+}
+type Dot = Node & { px: number; py: number; t: ReturnType<typeof place> };
+function project(view: "l" | "p") {
+  const fs = view === "l" ? 14 : 15;
+  const dots: Dot[] = nodes.map(n => {
+    const [px, py] = view === "l" ? [n.x, n.y] : [n.p[0], n.p[1]];
+    const pl: Place = view === "l" ? n.l : [n.p[2], n.p[3], n.p[4]];
+    return { ...n, px, py, t: place(n.kind, pl, fs) };
+  });
+  const by = Object.fromEntries(dots.map(d => [d.id, d]));
+  const lines = edges.map(([a, b]) => ({ x1: by[a].px, y1: by[a].py, x2: by[b].px, y2: by[b].py, flow: loop.has(`${a}|${b}`) }));
+  // viewBox from the drawn extents (node + halo, estimated label boxes) plus a small margin
+  let x1 = Infinity, y1 = Infinity, x2 = -Infinity, y2 = -Infinity;
+  for (const d of dots) {
+    const r = d.kind === "hub" ? 30 : R(d.kind);
+    const w = d.label.length * fs * 0.63, h = fs * 1.25;
+    const lx = d.px + d.t.x, ly = d.py + d.t.y;
+    const boxes = [
+      [d.px - r, d.py - r, d.px + r, d.py + r],
+      d.t.anchor === "start" ? [lx, ly - h * 0.7, lx + w, ly + h * 0.3] : d.t.anchor === "end" ? [lx - w, ly - h * 0.7, lx, ly + h * 0.3] : [lx - w / 2, ly - h * 0.7, lx + w / 2, ly + h * 0.3],
+    ];
+    for (const [a, b, c, e] of boxes) { x1 = Math.min(x1, a); y1 = Math.min(y1, b); x2 = Math.max(x2, c); y2 = Math.max(y2, e); }
+  }
+  const pad = 6;
+  const box = [Math.floor(x1 - pad), Math.floor(y1 - pad), Math.ceil(x2 - x1 + 2 * pad), Math.ceil(y2 - y1 + 2 * pad)];
+  const hub = dots.find(d => d.kind === "hub")!;
+  // the hub halo is an HTML overlay positioned in percentages of the drawn box (composited animation)
+  const halo = { left: ((hub.px - box[0]) / box[2] * 100).toFixed(2), top: ((hub.py - box[1]) / box[3] * 100).toFixed(2), width: (40 / box[2] * 100).toFixed(2) };
+  return { key: view, cls: view === "l" ? "landscape" : "portrait", box: box.join(" "), ratio: `${box[2]} / ${box[3]}`, lines, dots, halo };
+}
+const views = [project("l"), project("p")];
+const publicNodes = nodes.map(({ id, x, y, label, kind }) => ({ id, x, y, label, kind }));
+---
+<figure class="constellation-wrap" id="constellation" aria-label="Agent orchestration map">
+  <div id="constellation-3d" data-nodes={JSON.stringify(publicNodes)} data-edges={JSON.stringify(edges)} hidden></div>
+  {views.map(v => (
+    <div class={`map ${v.cls}`}>
+    <svg class={`constellation ${v.cls}`} viewBox={v.box} style={`aspect-ratio: ${v.ratio}`} role="img" aria-labelledby={`constellation-title-${v.key}`} aria-describedby={`constellation-desc-${v.key}`}>
+      <title id={`constellation-title-${v.key}`}>Agent orchestration map</title>
+      <desc id={`constellation-desc-${v.key}`}>Capability nodes — {capabilities} — connected by hand-offs around an operator hub. Red nodes are human approval gates and an external verification step.</desc>
+      <g class="edges">
+        {v.lines.map(e => <line class={e.flow ? "edge flow" : "edge"} x1={e.x1} y1={e.y1} x2={e.x2} y2={e.y2} />)}
+      </g>
+      <g class="nodes">
+        {v.dots.map(n => (
+          <g transform={`translate(${n.px} ${n.py})`}>
+            <circle class={`node ${n.kind}`} r={R(n.kind)} />
+            <text x={n.t.x} y={n.t.y} text-anchor={n.t.anchor}>{n.label}</text>
+          </g>
+        ))}
+      </g>
+    </svg>
+    <span class="halo" style={`left: ${v.halo.left}%; top: ${v.halo.top}%; width: ${v.halo.width}%`} aria-hidden="true"></span>
+    </div>
+  ))}
+  <ul class="legend" aria-label="Legend">
+    <li><span class="key agent"></span>agent</li>
+    <li><span class="key gate"></span>human gate / external check</li>
+    <li><span class="key hub"></span>operator</li>
+  </ul>
+  <figcaption>Where the humans are is the design. The model handles judgment; every one-way door has a gate.</figcaption>
+</figure>
+
+<script>
+  // Progressive: the map animates only while it is on screen (the tab-hidden case is handled by
+  // the layout). Without JS the animations simply run, as before.
+  const wrap = document.getElementById("constellation");
+  if (wrap && "IntersectionObserver" in window) {
+    new IntersectionObserver(([e]) => wrap.classList.toggle("is-offscreen", !e.isIntersecting), { threshold: 0 }).observe(wrap);
+  }
+</script>

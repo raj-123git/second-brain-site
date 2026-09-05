@@ -1,0 +1,23 @@
+# Cloudflare Pages config, read by `npx wrangler pages deploy` run from site/.
+#   AI      -> /api/ask (functions/api/ask.js) on Workers AI: no key, no third-party script, free daily allowance.
+#   TRAFFIC -> functions/_middleware.js writes one coarse record per page view (no IP, no cookie) into KV;
+#              functions/api/traffic.js reads them back for the weekly briefing (bearer TRAFFIC_KEY, a Pages secret).
+# The same bindings are declared for the preview environment so a `--branch <name>` deploy can be tested.
+name = "rajranpariya"
+compatibility_date = "2026-08-01"
+pages_build_output_dir = "dist"
+
+[ai]
+binding = "AI"
+
+[[kv_namespaces]]
+binding = "TRAFFIC"
+id = "<kv-namespace-id>"
+
+[env.preview]
+[env.preview.ai]
+binding = "AI"
+
+[[env.preview.kv_namespaces]]
+binding = "TRAFFIC"
+id = "<kv-namespace-id>"

@@ -29,8 +29,8 @@
         13
       ],
       "approved": true,
-      "queue_row": 3,
-      "content": "<p>I sell and manage heating and cooling projects for a living, for homes and commercial sites, and in 2026 I started building software seriously: agents, orchestration, and the verification around them, first as personal tools and then as a full multi-agent system built as an independent project.</p><p>I build with AI as an engineering partner. I define the problem, the workflow, the acceptance criteria and the human gates; I direct the implementation, then verify it against the running system rather than trusting a report that says it worked.</p><p class=\"muted\">Engineering background: MS in mechanical engineering, New York Institute of Technology, 2018; BE in aeronautical engineering, 2016.</p>"
+      "queue_row": 31,
+      "content": "<p>I sell and manage heating and cooling projects for a living, for homes and commercial sites, and in 2026 I started building software seriously: agents, orchestration, and the verification around them, first as personal tools and then as a full multi-agent system built as an independent project.</p><p>I build with AI as an engineering partner. I define the problem, the workflow, the acceptance criteria and the human gates; I direct the implementation, then verify it against the running system rather than trusting a report that says it worked.</p>"
     },
     {
       "id": "combination",
@@ -70,11 +70,12 @@
       "title": "Built to learn, verified against the running system",
       "ledger_rows": [
         6,
-        13
+        13,
+        52
       ],
       "approved": true,
-      "queue_row": 6,
-      "content": "<p>Projects I built to learn and to demonstrate what I can do, mostly in the problem space I know best: field-service operations. Every one was built through directed AI-assisted implementation: I defined the problem, the workflow, the gates and the acceptance criteria, directed the implementation, and verified the result against the running system. Descriptions say what runs today and what is only designed; nothing here is a product or a business.</p>",
+      "queue_row": 30,
+      "content": "<p>Projects I built to learn and to demonstrate what I can do, mostly in the problem space I know best: field-service operations. Every one was built through directed AI-assisted implementation: I defined the problem, the workflow, the gates and the acceptance criteria, directed the implementation, and verified the result against the running system. Descriptions say what runs today and what is only designed; nothing here is a product or a business.</p> <p class=\"muted\">Each card links to its proof: design notes, diagrams and the real verification harnesses on GitHub, with product code kept private.</p>",
       "artifacts": [
         {
           "id": "sales-tool",
@@ -85,7 +86,13 @@
             38,
             5
           ],
-          "queue_row": 7
+          "queue_row": 7,
+          "links": [
+            [
+              "Design notes + diagram",
+              "https://github.com/raj-123git/field-ops-agents/tree/main/comparison-presentation-tool"
+            ]
+          ]
         },
         {
           "id": "field-app",
@@ -96,7 +103,13 @@
             47,
             5
           ],
-          "queue_row": 22
+          "queue_row": 22,
+          "links": [
+            [
+              "Design notes + diagram",
+              "https://github.com/raj-123git/field-ops-agents/tree/main/field-app"
+            ]
+          ]
         },
         {
           "id": "backorder",
@@ -107,7 +120,13 @@
             46,
             5
           ],
-          "queue_row": 23
+          "queue_row": 23,
+          "links": [
+            [
+              "Design notes + diagram",
+              "https://github.com/raj-123git/field-ops-agents/tree/main/backorder-buster"
+            ]
+          ]
         },
         {
           "id": "voice-to-action",
@@ -120,7 +139,13 @@
           ],
           "approved": true,
           "content": "<p>Voice-to-structured-action layer for a field-service operations system. A seven-assistant squad: one call-taker greets, withholds the caller's name until confirmed, triages urgency from a per-trade knowledge pack, and hands off to six specialists. The voice platform's 30-second budget per tool call forced a split: anything on the conversational path runs in-process against the database; slower work falls to a workflow engine behind a 25-second abort. Caller identity comes from telephony metadata and overwrites whatever the model supplies; a booking exists only when a row is written. A weekly text-simulation harness runs three scripted scenarios across 18 trades; the latest run passed 18 of 18.</p>",
-          "queue_row": 8
+          "queue_row": 8,
+          "links": [
+            [
+              "Design notes + diagram",
+              "https://github.com/raj-123git/field-ops-agents/tree/main/voice-to-action"
+            ]
+          ]
         },
         {
           "id": "scheduling-workorders",
@@ -132,7 +157,13 @@
             9,
             13
           ],
-          "queue_row": 9
+          "queue_row": 9,
+          "links": [
+            [
+              "Design notes + state diagram",
+              "https://github.com/raj-123git/field-ops-agents/tree/main/scheduling-workorders"
+            ]
+          ]
         },
         {
           "id": "permit-lifecycle",
@@ -143,7 +174,13 @@
             42,
             13
           ],
-          "queue_row": 10
+          "queue_row": 10,
+          "links": [
+            [
+              "Design notes + diagram",
+              "https://github.com/raj-123git/field-ops-agents/tree/main/permit-lifecycle"
+            ]
+          ]
         },
         {
           "id": "post-job-followup",
@@ -154,7 +191,13 @@
             44,
             13
           ],
-          "queue_row": 11
+          "queue_row": 11,
+          "links": [
+            [
+              "Design notes + diagram",
+              "https://github.com/raj-123git/field-ops-agents/tree/main/post-job-followup"
+            ]
+          ]
         },
         {
           "id": "safety-layer",
@@ -167,7 +210,21 @@
             45,
             13
           ],
-          "queue_row": 12
+          "queue_row": 12,
+          "links": [
+            [
+              "Test excerpt (29 of 119)",
+              "https://github.com/raj-123git/field-ops-agents/tree/main/safety-layer/tests/test_safety_layer.py"
+            ],
+            [
+              "Design notes",
+              "https://github.com/raj-123git/field-ops-agents/tree/main/safety-layer"
+            ]
+          ],
+          "badges": [
+            "119 tests",
+            "2 adversarial review rounds"
+          ]
         },
         {
           "id": "evals",
@@ -179,7 +236,21 @@
           ],
           "approved": true,
           "content": "<p>Verification I trust more than reports. A green test suite that shares a predicate with the code cannot falsify it, so I delete each gate in turn and watch which tests still pass; on the email guard that found four sub-checks that could be removed with zero failures, and they now assert behaviour. A daily smoke check fires each agent's main write and asserts a real row landed, not a success flag. A weekly voice harness replays scripted callers across 18 trades with an independent judge, recalibrated once after it scored a safety-first emergency redirect as a failure. Done means an external effect a separate checker verified.</p>",
-          "queue_row": 13
+          "queue_row": 13,
+          "links": [
+            [
+              "Fleet smoke harness",
+              "https://github.com/raj-123git/field-ops-agents/tree/main/evals/fleet_smoke_test.py"
+            ],
+            [
+              "Voice regression harness",
+              "https://github.com/raj-123git/field-ops-agents/tree/main/evals/voice_regression_harness.py"
+            ]
+          ],
+          "badges": [
+            "14/14 daily smoke",
+            "18-trade weekly regression"
+          ]
         }
       ]
     },
@@ -232,7 +303,13 @@
             39,
             13
           ],
-          "queue_row": 16
+          "queue_row": 16,
+          "links": [
+            [
+              "Write-up",
+              "https://github.com/raj-123git/second-brain-site/blob/main/projects/market-monitor.md"
+            ]
+          ]
         },
         {
           "id": "life-admin",
@@ -243,7 +320,13 @@
             37,
             31
           ],
-          "queue_row": 17
+          "queue_row": 17,
+          "links": [
+            [
+              "Write-up",
+              "https://github.com/raj-123git/second-brain-site/blob/main/projects/life-admin.md"
+            ]
+          ]
         },
         {
           "id": "health-routine",
@@ -253,7 +336,13 @@
           "ledger_rows": [
             35
           ],
-          "queue_row": 18
+          "queue_row": 18,
+          "links": [
+            [
+              "Write-up",
+              "https://github.com/raj-123git/second-brain-site/blob/main/projects/health-routine.md"
+            ]
+          ]
         },
         {
           "id": "job-aggregator",
@@ -277,7 +366,13 @@
       ],
       "approved": true,
       "queue_row": 15,
-      "content": "<p>A private second brain I built for my own work. Postgres with pgvector holds verbatim evidence chunks and extracted memories, every row carrying provenance and a sensitivity level. Local open-weight models on one small server embed and extract nightly under a CPU cap, and a Markdown wiki is regenerated from the database each night. Eleven MCP tools expose search and recall to my coding assistant behind a per-client sensitivity ceiling. A publication firewall, a claims ledger, an approval queue and a deterministic leak gate wired into the site build, is the only path from private notes to this site. A spoken-briefing path to my phone is prototyped.</p>"
+      "content": "<p>A private second brain I built for my own work. Postgres with pgvector holds verbatim evidence chunks and extracted memories, every row carrying provenance and a sensitivity level. Local open-weight models on one small server embed and extract nightly under a CPU cap, and a Markdown wiki is regenerated from the database each night. Eleven MCP tools expose search and recall to my coding assistant behind a per-client sensitivity ceiling. A publication firewall, a claims ledger, an approval queue and a deterministic leak gate wired into the site build, is the only path from private notes to this site. A spoken-briefing path to my phone is prototyped.</p>",
+      "links": [
+        [
+          "Source: site, firewall, assistant, Jarvis",
+          "https://github.com/raj-123git/second-brain-site"
+        ]
+      ]
     },
     {
       "id": "hobbies",
@@ -319,5 +414,6 @@
     "queue_row": 29,
     "by": "Raj via chat 2026-09-05",
     "note": "Remove the noindex tag: the site is public and may be indexed."
-  }
+  },
+  "github": "https://github.com/raj-123git"
 }

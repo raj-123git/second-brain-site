@@ -384,6 +384,3 @@ details.more p { font-size: var(--t-sm); color: var(--ink-2); }
 
 .badges { display: flex; flex-wrap: wrap; gap: 0.35rem; margin: -0.2rem 0 0.6rem; }
 .badges span { font-family: var(--mono); font-size: var(--t-xs); letter-spacing: 0.02em; padding: 0.15rem 0.5rem; border-radius: 6px; background: var(--surface-2); border: 1px solid var(--line); color: var(--ink-2); }
-
-/* scene coexistence (2026-09-05): content surfaces go near-opaque so text never sits on drawing lines */
-.card, .skills > div, .legs li, #contact .ask, .contact-actions .btn-ghost, .hero-actions .btn-ghost { background: var(--panel, var(--surface-2)); }

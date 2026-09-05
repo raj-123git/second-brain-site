@@ -1,14 +1,14 @@
 ---
 // Agent / orchestration constellation — the site's primary visual (pack §F).
-// This is the 2D SVG version: it IS the mobile and reduced-motion experience, and the
-// fallback the Phase 4 Three.js scene mounts over on capable desktops (#constellation-3d).
-// Labels are capability nouns, never internal agent or product names (ledger rows 6–7).
+// One node/edge graph, two drawings of it (landscape and portrait). Labels are capability
+// nouns, never internal agent or product names (ledger rows 6–7).
 //
-// One node/edge graph, two drawings of it. The landscape map is the source geometry. The
-// portrait map is the same graph rotated a quarter turn and then nudged node by node, because
-// a horizontal label that clears every edge in one orientation does not in the other. Each node
-// carries a label side per view (n/ne/e/se/s/sw/w/nw plus a small offset); the build harness
-// samples every edge against every label box and requires zero intersections at 390 and 1280.
+// Motion (2026-09-05, Raj: "put the chart back, make it live"): the map draws itself in when it
+// scrolls into view (edges draw, nodes pop in order), a hand-off packet travels the outer loop,
+// a second packet takes the gated detours and STOPS at the red gate while the gate ring pulses,
+// then continues — the human-in-the-loop story told by the chart itself. Hovering a node lights
+// its connections. Everything pauses off-screen and in a hidden tab; reduced motion shows the
+// finished map with no packets. Plain SVG + CSS + SMIL, no library.
 type Side = "n" | "ne" | "e" | "se" | "s" | "sw" | "w" | "nw";
 type Place = [Side, number, number];                 // side, x offset, y offset (SVG units)
 type Node = { id: string; x: number; y: number; label: string; kind: "hub" | "agent" | "gate"; l: Place; p: [number, number, Side, number, number] };
@@ -34,8 +34,12 @@ const edges: [string, string][] = [
   ["hub","calls"],["hub","sched"],["hub","work"],["hub","acct"],["hub","review"],["hub","mkt"],
   ["work","gate1"],["gate1","permit"],["review","gate2"],["gate2","mkt"],["permit","verify"],
 ];
-// The outer hand-off loop is the animated one; hub spokes and gate links stay still.
+// The outer hand-off loop is the dashed, flowing one; hub spokes and gate links draw in solid.
 const loop = new Set(["calls|sched","sched|work","work|permit","permit|acct","acct|follow","follow|review","review|mkt","mkt|kpi","kpi|calls"]);
+const loopOrder = ["calls","sched","work","permit","acct","follow","review","mkt","kpi","calls"];
+// Gated detours: the packet stops at the gate (a human decides), then continues.
+const gated: [string, string, string, number][] = [["work","gate1","permit", 0], ["review","gate2","mkt", 7]];   // last = start delay (s)
+const GATE_CYCLE = 14;   // seconds; both detours share one cycle so their gate rings never fire together
 const capabilities = nodes.filter(n => n.kind === "agent").map(n => n.label).join(", ");
 const R = (k: Node["kind"]) => (k === "hub" ? 14 : k === "gate" ? 9 : 11);
 const GAP = 7;
@@ -58,7 +62,17 @@ function project(view: "l" | "p") {
     return { ...n, px, py, t: place(n.kind, pl, fs) };
   });
   const by = Object.fromEntries(dots.map(d => [d.id, d]));
-  const lines = edges.map(([a, b]) => ({ x1: by[a].px, y1: by[a].py, x2: by[b].px, y2: by[b].py, flow: loop.has(`${a}|${b}`) }));
+  const lines = edges.map(([a, b], i) => ({
+    a, b, i, x1: by[a].px, y1: by[a].py, x2: by[b].px, y2: by[b].py, flow: loop.has(`${a}|${b}`),
+    len: Math.ceil(Math.hypot(by[b].px - by[a].px, by[b].py - by[a].py)),
+  }));
+  const pt = (id: string) => `${by[id].px} ${by[id].py}`;
+  const loopPath = "M " + loopOrder.map(pt).join(" L ");
+  const detours = gated.map(([a, g, b, delay]) => {
+    const l1 = Math.hypot(by[g].px - by[a].px, by[g].py - by[a].py), l2 = Math.hypot(by[b].px - by[g].px, by[b].py - by[g].py);
+    const f = +(l1 / (l1 + l2)).toFixed(3);
+    return { gate: g, delay, path: `M ${pt(a)} L ${pt(g)} L ${pt(b)}`, keyPoints: `0;${f};${f};1`, gx: by[g].px, gy: by[g].py };
+  });
   // viewBox from the drawn extents (node + halo, estimated label boxes) plus a small margin
   let x1 = Infinity, y1 = Infinity, x2 = -Infinity, y2 = -Infinity;
   for (const d of dots) {
@@ -76,7 +90,7 @@ function project(view: "l" | "p") {
   const hub = dots.find(d => d.kind === "hub")!;
   // the hub halo is an HTML overlay positioned in percentages of the drawn box (composited animation)
   const halo = { left: ((hub.px - box[0]) / box[2] * 100).toFixed(2), top: ((hub.py - box[1]) / box[3] * 100).toFixed(2), width: (40 / box[2] * 100).toFixed(2) };
-  return { key: view, cls: view === "l" ? "landscape" : "portrait", box: box.join(" "), ratio: `${box[2]} / ${box[3]}`, lines, dots, halo };
+  return { key: view, cls: view === "l" ? "landscape" : "portrait", box: box.join(" "), ratio: `${box[2]} / ${box[3]}`, lines, dots, halo, loopPath, detours };
 }
 const views = [project("l"), project("p")];
 const publicNodes = nodes.map(({ id, x, y, label, kind }) => ({ id, x, y, label, kind }));
@@ -85,22 +99,49 @@ const publicNodes = nodes.map(({ id, x, y, label, kind }) => ({ id, x, y, label,
   <div id="constellation-3d" data-nodes={JSON.stringify(publicNodes)} data-edges={JSON.stringify(edges)} hidden></div>
   {views.map(v => (
     <div class={`map ${v.cls}`}>
+    <div class="tilt"><div class="drift">
+    <svg class="depth" viewBox={v.box} style={`aspect-ratio: ${v.ratio}`} aria-hidden="true" focusable="false">
+      {v.lines.map(e => <line x1={e.x1} y1={e.y1} x2={e.x2} y2={e.y2} />)}
+      {v.dots.map(n => <circle cx={n.px} cy={n.py} r={R(n.kind) + 2} />)}
+    </svg>
     <svg class={`constellation ${v.cls}`} viewBox={v.box} style={`aspect-ratio: ${v.ratio}`} role="img" aria-labelledby={`constellation-title-${v.key}`} aria-describedby={`constellation-desc-${v.key}`}>
       <title id={`constellation-title-${v.key}`}>Agent orchestration map</title>
-      <desc id={`constellation-desc-${v.key}`}>Capability nodes — {capabilities} — connected by hand-offs around an operator hub. Red nodes are human approval gates and an external verification step.</desc>
+      <desc id={`constellation-desc-${v.key}`}>Capability nodes — {capabilities} — connected by hand-offs around an operator hub. Red nodes are human approval gates and external checks: a hand-off waits there until a person decides.</desc>
       <g class="edges">
-        {v.lines.map(e => <line class={e.flow ? "edge flow" : "edge"} x1={e.x1} y1={e.y1} x2={e.x2} y2={e.y2} />)}
+        {v.lines.map(e => <line class={e.flow ? "edge flow" : "edge"} data-a={e.a} data-b={e.b} x1={e.x1} y1={e.y1} x2={e.x2} y2={e.y2} style={`--len: ${e.len}; --i: ${e.i}`} />)}
       </g>
       <g class="nodes">
-        {v.dots.map(n => (
-          <g transform={`translate(${n.px} ${n.py})`}>
-            <circle class={`node ${n.kind}`} r={R(n.kind)} />
-            <text x={n.t.x} y={n.t.y} text-anchor={n.t.anchor}>{n.label}</text>
+        {v.dots.map((n, i) => (
+          <g transform={`translate(${n.px} ${n.py})`} data-id={n.id} style={`--i: ${i}`}>
+            <g class="pop">
+              {n.kind === "gate" && <circle class="ring" r={R(n.kind) + 5} />}
+              <circle class={`node ${n.kind}`} r={R(n.kind)} />
+              <text x={n.t.x} y={n.t.y} text-anchor={n.t.anchor}>{n.label}</text>
+            </g>
           </g>
+        ))}
+      </g>
+      <g class="pulses" aria-hidden="true">
+        <circle class="pulse loop-pulse" r="3.2" opacity="0">
+          <set attributeName="opacity" to="1" begin="2.4s" />
+          <animateMotion dur="18s" begin="2.4s" repeatCount="indefinite" path={v.loopPath} />
+        </circle>
+        {v.detours.map(d => (
+          <>
+            <circle class="pulse gate-pulse" r="3.6" opacity="0">
+              <set attributeName="opacity" to="1" begin={`${3 + d.delay}s`} />
+              <animateMotion dur={`${GATE_CYCLE}s`} begin={`${3 + d.delay}s`} repeatCount="indefinite" calcMode="linear" path={d.path} keyPoints={d.keyPoints} keyTimes="0;0.3;0.62;1" />
+            </circle>
+            <circle class="gate-glow" cx={d.gx} cy={d.gy} r="14">
+              <animate attributeName="r" values="14;14;24;14;14" keyTimes="0;0.3;0.44;0.62;1" dur={`${GATE_CYCLE}s`} begin={`${3 + d.delay}s`} repeatCount="indefinite" />
+              <animate attributeName="opacity" values="0;0;0.55;0;0" keyTimes="0;0.3;0.44;0.62;1" dur={`${GATE_CYCLE}s`} begin={`${3 + d.delay}s`} repeatCount="indefinite" />
+            </circle>
+          </>
         ))}
       </g>
     </svg>
     <span class="halo" style={`left: ${v.halo.left}%; top: ${v.halo.top}%; width: ${v.halo.width}%`} aria-hidden="true"></span>
+    </div></div>
     </div>
   ))}
   <ul class="legend" aria-label="Legend">
@@ -112,10 +153,47 @@ const publicNodes = nodes.map(({ id, x, y, label, kind }) => ({ id, x, y, label,
 </figure>
 
 <script>
-  // Progressive: the map animates only while it is on screen (the tab-hidden case is handled by
-  // the layout). Without JS the animations simply run, as before.
+  // Progressive: without JS the finished map simply shows and the loop keeps flowing. With JS the
+  // draw-in runs once when the map enters view, SMIL packets pause off-screen and in hidden tabs,
+  // and hovering a node lights its connections.
   const wrap = document.getElementById("constellation");
-  if (wrap && "IntersectionObserver" in window) {
-    new IntersectionObserver(([e]) => wrap.classList.toggle("is-offscreen", !e.isIntersecting), { threshold: 0 }).observe(wrap);
+  if (wrap) {
+    const svgs = [...wrap.querySelectorAll<SVGSVGElement>("svg.constellation")];
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const paused = () => document.hidden || wrap.classList.contains("is-offscreen");
+    const sync = () => svgs.forEach(s => { try { paused() ? s.pauseAnimations() : s.unpauseAnimations(); } catch {} });
+    if (reduced) wrap.classList.add("is-visible");
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(([e]) => {
+        wrap.classList.toggle("is-offscreen", !e.isIntersecting);
+        if (e.isIntersecting) wrap.classList.add("is-visible");
+        sync();
+      }, { threshold: 0.12 }).observe(wrap);
+    } else wrap.classList.add("is-visible");
+    document.addEventListener("visibilitychange", sync);
+    // Depth: the map sits in perspective, drifts on its own (CSS), and tilts toward the pointer.
+    if (!reduced) for (const map of wrap.querySelectorAll<HTMLElement>(".map")) {
+      const tilt = map.querySelector<HTMLElement>(".tilt");
+      if (!tilt) continue;
+      map.addEventListener("pointermove", e => {
+        if (e.pointerType === "touch") return;
+        const r = map.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
+        tilt.style.setProperty("--ry", `${(x * 16).toFixed(2)}deg`);
+        tilt.style.setProperty("--rx", `${(-y * 13).toFixed(2)}deg`);
+      });
+      map.addEventListener("pointerleave", () => { tilt.style.setProperty("--ry", "0deg"); tilt.style.setProperty("--rx", "0deg"); });
+    }
+    for (const svg of svgs) {
+      const lines = [...svg.querySelectorAll<SVGLineElement>(".edge")];
+      const groups = [...svg.querySelectorAll<SVGGElement>(".nodes > g")];
+      const focus = (id: string | null) => {
+        if (id) svg.dataset.focus = id; else delete svg.dataset.focus;
+        lines.forEach(l => l.classList.toggle("lit", !!id && (l.dataset.a === id || l.dataset.b === id)));
+        groups.forEach(g => g.classList.toggle("on", g.dataset.id === id));
+      };
+      svg.addEventListener("pointerover", e => { const g = (e.target as Element).closest<SVGGElement>(".nodes > g"); if (g) focus(g.dataset.id ?? null); });
+      svg.addEventListener("pointerout", e => { const g = (e.target as Element).closest(".nodes > g"); if (g && !(e.relatedTarget instanceof Node && g.contains(e.relatedTarget))) focus(null); });
+    }
   }
 </script>

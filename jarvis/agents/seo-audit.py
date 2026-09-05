@@ -77,12 +77,13 @@ class Page(HTMLParser):
         super().__init__()
         self.title = ""; self.meta: dict[str, str] = {}; self.canonical = ""; self.ld: list[str] = []
         self.h1 = 0; self.hrefs: list[str] = []; self.lang = ""; self.text: list[str] = []
-        self._in = None; self._ld = False
+        self._in = None; self._ld = False; self.svg = 0
 
     def handle_starttag(self, tag, attrs):
         a = dict(attrs)
         if tag == "html": self.lang = a.get("lang", "")
-        if tag == "title": self._in = "title"
+        if tag == "svg": self.svg += 1
+        if tag == "title" and not self.svg and not self.title: self._in = "title"   # the document title only, never an SVG <title>
         if tag == "meta":
             k = a.get("name") or a.get("property")
             if k: self.meta[k.lower()] = a.get("content", "")
@@ -96,6 +97,7 @@ class Page(HTMLParser):
 
     def handle_endtag(self, tag):
         if tag in ("title", "script", "style"): self._in = None; self._ld = False
+        if tag == "svg": self.svg = max(0, self.svg - 1)
 
     def handle_data(self, data):
         if self._in == "title": self.title += data
@@ -154,7 +156,7 @@ class Audit:
         # internal links
         internal = []
         for h in p.hrefs:
-            if h.startswith("mailto:") or h.startswith("#") or h.startswith("tel:"): continue
+            if h.startswith("mailto:") or h.startswith("#") or h.startswith("tel:") or "/cdn-cgi/" in h: continue   # Cloudflare email obfuscation links decode only in a browser
             if h.startswith("/"): internal.append(SITE + h)
             elif h.startswith(SITE): internal.append(h)
         broken = []

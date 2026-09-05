@@ -22,6 +22,7 @@ flowchart LR
 
 | Path | What it is |
 |---|---|
+| `site/src/scene/` | The dimensional layer: one fixed WebGL2 canvas (custom renderer, `three` for math and geometry), eleven section states driven by scroll, card-linked highlights, an SVG still fallback, and tiers for phones and reduced motion. Designed with GPT-6 Astra from a written brief; integrated and gated here. |
 | `site/` | Astro static site. Sections and cards render only from `src/data/sections.json`; unapproved slots render as "Coming soon". |
 | `scripts/publish.py` + `test_publish.py` | The publication contract: a queue row can ship only if every claim it cites is verified, its text passes the leak patterns, and its target slot allows those claims. 20 tests. |
 | `scripts/leak-check.sh` | The gate wired into `npm run build`. Scans source, built output, the functions and the PDF text. Fails the build on a hit; has a self-test that plants leaks. |

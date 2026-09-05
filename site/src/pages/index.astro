@@ -13,8 +13,9 @@ import Monogram from "../components/Monogram.astro";
 import Ask from "../components/Ask.astro";
 import data from "../data/sections.json";
 
-type Artifact = { id: string; title: string; ledger_rows?: number[]; approved: boolean; content: string };
-type Slot = { id: string; eyebrow: string; title: string; ledger_rows?: number[]; approved: boolean; queue_row?: number | null; content: string; artifacts?: Artifact[] };
+type Artifact = { id: string; title: string; ledger_rows?: number[]; approved: boolean; content: string; links?: [string, string][]; badges?: string[] };
+type Slot = { id: string; eyebrow: string; title: string; ledger_rows?: number[]; approved: boolean; queue_row?: number | null; content: string; artifacts?: Artifact[]; links?: [string, string][] };
+const GITHUB = (data as { github?: string }).github ?? "";
 const sections = data.sections as Slot[];
 const hero = sections.find(s => s.id === "hero")!;
 const rest = sections.filter(s => s.id !== "hero" && s.id !== "ask");
@@ -108,6 +109,7 @@ const view = rest.map((s, i) => ({
           {ready
             ? (NOFOLD.has(s.id) ? <Fragment set:html={s.content} /> : <><Fragment set:html={teaser(s.content).lead} />{teaser(s.content).rest && <details class="more"><summary>More</summary><Fragment set:html={teaser(s.content).rest} /></details>}</>)
             : <p class:list={["placeholder", { internal }]} data-slot={s.id}>{internal ? `${s.id} — awaiting review · ledger rows ${rows(s.ledger_rows)}` : "Coming soon."}</p>}
+          {ready && s.links?.length && GITHUB && <p class="proof"><span class="proof-label">On GitHub</span>{s.links.map(([label, href]) => <a href={href} target="_blank" rel="noopener">{label}</a>)}</p>}
         </div>
         {cards.length > 0 && (
           <div class="grid">
@@ -116,9 +118,11 @@ const view = rest.map((s, i) => ({
                 <div class="card-art"><Icon name={ART_ICON[a.id] ?? "artifact"} /></div>
                 <div>
                   <h3>{a.title}</h3>
+                  {a.approved && a.badges?.length && <p class="badges">{a.badges.map(b => <span>{b}</span>)}</p>}
                   {a.approved && a.content
                     ? <><Fragment set:html={teaser(a.content).lead} />{teaser(a.content).rest && <details class="more"><summary>More</summary><Fragment set:html={teaser(a.content).rest} /></details>}</>
                     : <p class:list={["placeholder", { internal }]} data-slot={`artifact-${a.id}`}>awaiting review · rows {rows(a.ledger_rows)}</p>}
+                  {a.approved && a.links?.length && GITHUB && <p class="proof"><span class="proof-label">On GitHub</span>{a.links.map(([label, href]) => <a href={href} target="_blank" rel="noopener">{label}</a>)}</p>}
                 </div>
               </article>
             ))}
@@ -128,6 +132,7 @@ const view = rest.map((s, i) => ({
           <>
             <div class="contact-actions">
               <a class="btn btn-primary btn-lg" href={`mailto:${EMAIL}`}><Icon name="email" />Email</a>
+              {GITHUB && <a class="btn btn-ghost btn-lg" href={GITHUB} target="_blank" rel="noopener"><Icon name="github" />GitHub</a>}
               <a class="btn btn-ghost btn-lg" href={RESUME} type="application/pdf" target="_blank" rel="noopener"><Icon name="resume" />PDF Résumé<span class="sr-only"> (opens in a new tab)</span></a>
             </div>
             <p class="contact-email"><a href={`mailto:${EMAIL}`}>{EMAIL}</a></p>

@@ -1,0 +1,117 @@
+---
+// Base layout. Contains NO factual claims. Everything visible on the site comes from
+// src/data/sections.json slots that passed the publication queue — the only constants here are
+// the one approved public address (ledger row 34) and the résumé path.
+import "../styles/global.css";
+import Icon from "../components/Icon.astro";
+interface Props { title: string; description?: string; nav?: [string, string][] }
+import data from "../data/sections.json";
+const { title, description = "", nav = [] } = Astro.props;
+const launched = Boolean((data as { launch?: { approved?: boolean } }).launch?.approved);   // set only by an approved launch row
+const SITE = "https://rajranpariya.com/";
+// JSON-LD Person: only wording that already stands in approved slots (headline, skills vocabulary).
+const person = { "@context": "https://schema.org", "@type": "Person", name: "Raj Ranpariya", url: SITE, jobTitle: "HVAC Comfort Advisor & Project Manager", description,
+  knowsAbout: ["HVAC system design", "technical sales", "project management", "AI agents", "agent orchestration", "human-in-the-loop systems", "voice agents", "workflow automation"] };
+const EMAIL = "rajranpariya22@gmail.com";
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    {description && <meta name="description" content={description} />}
+    {!launched && <meta name="robots" content="noindex" />}{/* removed only by an approved launch row (publish.py target `launch`) */}
+    <meta name="theme-color" content="#f7f5f0" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#070b14" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <title>{title}</title>
+    <link rel="canonical" href={SITE} />
+    <meta property="og:type" content="profile" />
+    <meta property="og:title" content={title} />
+    {description && <meta property="og:description" content={description} />}
+    <meta property="og:url" content={SITE} />
+    <meta property="og:site_name" content="Raj Ranpariya" />
+    <meta property="og:image" content={SITE + "og.png"} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Raj Ranpariya, HVAC Comfort Advisor and Project Manager who builds AI systems" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={SITE + "og.png"} />
+    <meta name="twitter:title" content={title} />
+    {description && <meta name="twitter:description" content={description} />}
+    <script type="application/ld+json" set:html={JSON.stringify(person)} />
+    <script is:inline>document.documentElement.classList.add("js");</script>
+  </head>
+  <body>
+    <div class="sky" aria-hidden="true"></div>
+    <div class="stars" aria-hidden="true"></div>
+    <div class="stars-2" aria-hidden="true"></div>
+    <a class="skip" href="#main">Skip to content</a>
+
+    <header class="site-header" id="site-header">
+      <a class="brand" href="#top" aria-label="Raj Ranpariya, back to top">
+        <svg class="mark" viewBox="0 0 26 26" aria-hidden="true" focusable="false">
+          <line class="edge" x1="13" y1="14" x2="5.5" y2="6" /><line class="edge" x1="13" y1="14" x2="20.5" y2="7" /><line class="edge" x1="13" y1="14" x2="18.5" y2="20.5" />
+          <circle class="node hub" cx="13" cy="14" r="3.4" /><circle class="node" cx="5.5" cy="6" r="2.2" /><circle class="node" cx="20.5" cy="7" r="2.2" /><circle class="node gate" cx="18.5" cy="20.5" r="2.2" />
+        </svg>
+        <span class="brand-name">Raj Ranpariya</span>
+      </a>
+      <div class="header-right">
+        <nav class="nav-links" aria-label="Sections">
+          {nav.map(([href, label]) => <a href={href}>{label}</a>)}
+        </nav>
+        <a class="btn btn-primary btn-sm header-email" href={`mailto:${EMAIL}`}><Icon name="email" />Email</a>
+        <details class="menu" id="menu">
+          <summary aria-label="Section menu"><Icon name="grid" /></summary>
+          <nav class="menu-panel" aria-label="Sections">
+            {nav.map(([href, label]) => <a href={href}>{label}</a>)}
+            <a href="#contact">Contact</a>
+          </nav>
+        </details>
+      </div>
+    </header>
+
+    <main id="main" tabindex="-1"><slot /></main>
+
+    <footer class="site-footer" id="site-footer">
+      <p>Raj Ranpariya · <a href={`mailto:${EMAIL}`}>{EMAIL}</a></p>
+      <p>Built as a static site. No tracking scripts, no third-party requests.</p>
+    </footer>
+    <a class="totop" href="#top" aria-label="Back to top"><Icon name="arrow-up" /></a>
+
+    <script>
+      // Progressive only: the page works without this. Shows the back-to-top control once the
+      // hero has scrolled away and hides it again while the footer is on screen (so it never
+      // covers the footer text), underlines the sticky header, pauses every animation while the
+      // tab is hidden, and closes the phone menu on use.
+      const hero = document.getElementById("top");
+      const footer = document.getElementById("site-footer");
+      const totop = document.querySelector<HTMLElement>(".totop");
+      const header = document.getElementById("site-header");
+      const menu = document.querySelector<HTMLDetailsElement>("#menu");
+      if (hero && footer && totop && "IntersectionObserver" in window) {
+        let heroGone = false, footerNear = false;
+        const apply = () => totop.classList.toggle("is-visible", heroGone && !footerNear);
+        new IntersectionObserver(([e]) => { heroGone = !e.isIntersecting; apply(); }, { threshold: 0 }).observe(hero);
+        new IntersectionObserver(([e]) => { footerNear = e.isIntersecting; apply(); }, { threshold: 0 }).observe(footer);
+      }
+      let ticking = false;
+      const stuck = () => header?.classList.toggle("is-stuck", scrollY > 8);
+      addEventListener("scroll", () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => { stuck(); ticking = false; });
+      }, { passive: true });
+      stuck();
+      const hidden = () => document.documentElement.classList.toggle("is-hidden", document.hidden);
+      document.addEventListener("visibilitychange", hidden);
+      hidden();
+      menu?.querySelectorAll("a").forEach(a => a.addEventListener("click", () => menu.removeAttribute("open")));
+      document.addEventListener("click", e => { if (menu?.open && !menu.contains(e.target as Node)) menu.removeAttribute("open"); });
+      document.addEventListener("keydown", e => { if (e.key === "Escape" && menu?.open) menu.removeAttribute("open"); });
+    </script>
+  </body>
+</html>

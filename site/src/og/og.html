@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>og card</title>
+<!-- Open Graph card, 1200x630. Rendered to site/public/og.png by scripts/render-og.sh. Wording = the approved
+     headline and hero vocabulary only (queue rows 1/26/28, ledger 25/50). No photo, no employer, no product. -->
+<style>
+  html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; }
+  body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; color: #17191f;
+         background: #f7f5f0; position: relative; }
+  .aurora { position: absolute; inset: 0;
+    background:
+      radial-gradient(60% 55% at 12% 20%, rgba(64,196,180,.28), transparent 70%),
+      radial-gradient(50% 50% at 88% 30%, rgba(150,130,255,.26), transparent 70%),
+      radial-gradient(60% 50% at 70% 95%, rgba(255,190,140,.30), transparent 70%); }
+  .card { position: absolute; inset: 56px; border: 1px solid rgba(23,25,31,.11); border-radius: 28px;
+          background: rgba(255,255,255,.62); padding: 64px 72px; box-sizing: border-box; }
+  .eyebrow { font-family: ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace; font-size: 22px; letter-spacing: .18em;
+             text-transform: uppercase; color: #4f5562; }
+  h1 { font-family: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif; font-weight: 500;
+       font-size: 104px; line-height: 1; margin: 28px 0 22px; letter-spacing: -.01em; }
+  .line { font-size: 38px; line-height: 1.25; color: #17191f; max-width: 980px; }
+  .sub { margin-top: 26px; font-size: 27px; color: #464b56; }
+  .sub span { color: #0b5cad; }
+  .url { position: absolute; right: 72px; bottom: 52px; font-family: ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
+         font-size: 26px; color: #0b5cad; }
+  .mark { position: absolute; left: 72px; bottom: 44px; width: 64px; height: 64px; }
+</style>
+</head>
+<body>
+<div class="aurora"></div>
+<div class="card">
+  <div class="eyebrow">rajranpariya.com</div>
+  <h1>Raj Ranpariya</h1>
+  <div class="line">HVAC Comfort Advisor &amp; Project Manager who builds AI systems</div>
+  <div class="sub">Customer-facing technical sales <span>·</span> project ownership from proposal to inspection <span>·</span> AI systems built by directing AI</div>
+  <svg class="mark" viewBox="0 0 64 64" fill="none" stroke="#0b5cad" stroke-width="2.2" stroke-linecap="round">
+    <circle cx="14" cy="18" r="4"/><circle cx="46" cy="14" r="4"/><circle cx="30" cy="40" r="5"/><circle cx="52" cy="48" r="4"/><circle cx="12" cy="50" r="3.5"/>
+    <path d="M17 20l10 17M43 17l-10 20M34 43l14 4M26 43l-11 5"/>
+  </svg>
+  <div class="url">rajranpariya.com</div>
+</div>
+</body>
+</html>

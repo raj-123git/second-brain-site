@@ -1,0 +1,11 @@
+# Cloudflare Pages headers (site/public/_headers). The résumé PDF names real employers (Raj 2026-09-05):
+# it must never be indexed, so the employer name can never pull this site into a search result.
+/Raj_Ranpariya_Resume.pdf
+  X-Robots-Tag: noindex, nofollow
+  Cache-Control: no-store
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: DENY
+  Permissions-Policy: camera=(), microphone=(), geolocation=()

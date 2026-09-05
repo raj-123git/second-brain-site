@@ -1,0 +1,5 @@
+{
+  "version": 1,
+  "include": ["/", "/index.html", "/api/*", "/Raj_Ranpariya_Resume.pdf"],
+  "exclude": []
+}

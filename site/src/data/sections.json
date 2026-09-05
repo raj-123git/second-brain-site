@@ -74,8 +74,8 @@
         52
       ],
       "approved": true,
-      "queue_row": 30,
-      "content": "<p>Projects I built to learn and to demonstrate what I can do, mostly in the problem space I know best: field-service operations. Every one was built through directed AI-assisted implementation: I defined the problem, the workflow, the gates and the acceptance criteria, directed the implementation, and verified the result against the running system. Descriptions say what runs today and what is only designed; nothing here is a product or a business.</p> <p class=\"muted\">Each card links to its proof: design notes, diagrams and the real verification harnesses on GitHub, with product code kept private.</p>",
+      "queue_row": 32,
+      "content": "<p>Projects I built to learn and to demonstrate what I can do, mostly in the problem space I know best: field-service operations. Every one was built through directed AI-assisted implementation: I defined the problem, the workflow, the gates and the acceptance criteria, directed the implementation, and verified the result against the running system. Descriptions say what runs today and what is only designed; nothing here is a product or a business.</p> <p class=\"muted\">Each card links to GitHub: design notes, diagrams and the real verification harnesses, with product code kept private.</p>",
       "artifacts": [
         {
           "id": "sales-tool",

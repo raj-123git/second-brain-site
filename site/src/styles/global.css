@@ -384,3 +384,50 @@ details.more p { font-size: var(--t-sm); color: var(--ink-2); }
 
 .badges { display: flex; flex-wrap: wrap; gap: 0.35rem; margin: -0.2rem 0 0.6rem; }
 .badges span { font-family: var(--mono); font-size: var(--t-xs); letter-spacing: 0.02em; padding: 0.15rem 0.5rem; border-radius: 6px; background: var(--surface-2); border: 1px solid var(--line); color: var(--ink-2); }
+
+/* ---------- constellation life (2026-09-05): draw-in, packets, gate stops, hover ---------- */
+@keyframes draw-edge { to { stroke-dashoffset: 0; } }
+@keyframes fade-edge { from { stroke-opacity: 0; } }
+@keyframes pop-node { from { opacity: 0; transform: scale(0.35); } to { opacity: 1; transform: scale(1); } }
+.constellation .nodes .pop { transform-box: fill-box; transform-origin: center; }
+html.js .constellation-wrap:not(.is-visible) .edge:not(.flow) { stroke-dasharray: var(--len); stroke-dashoffset: var(--len); }
+html.js .constellation-wrap:not(.is-visible) .edge.flow { stroke-opacity: 0; }
+html.js .constellation-wrap:not(.is-visible) .nodes .pop { opacity: 0; }
+html.js .constellation-wrap.is-visible .edge:not(.flow) { stroke-dasharray: var(--len); stroke-dashoffset: var(--len); animation: draw-edge 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards; animation-delay: calc(0.5s + var(--i) * 0.07s); }
+html.js .constellation-wrap.is-visible .edge.flow { animation: flow 5s linear infinite, fade-edge 0.9s ease-out both; animation-delay: 0s, calc(0.3s + var(--i) * 0.07s); }
+html.js .constellation-wrap.is-visible .nodes .pop { animation: pop-node 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both; animation-delay: calc(0.15s + var(--i) * 0.09s); }
+.constellation .ring { fill: none; stroke: var(--gate); stroke-opacity: 0.25; stroke-width: 1; }
+.constellation .pulse { fill: var(--accent); }
+.constellation .gate-pulse { fill: var(--gate); }
+.constellation .gate-glow { fill: var(--gate); opacity: 0; }
+.constellation .nodes > g { transition: opacity 0.25s ease; }
+.constellation[data-focus] .edge { stroke-opacity: 0.14; }
+.constellation[data-focus] .edge.flow { stroke-opacity: 0.14; }
+.constellation[data-focus] .edge.lit { stroke: var(--accent); stroke-opacity: 1; stroke-width: 1.8; }
+.constellation[data-focus] .nodes > g:not(.on) { opacity: 0.42; }
+.constellation .nodes > g.on text { fill: var(--ink); font-weight: 600; }
+.constellation .nodes > g.on .node { stroke-width: 2.4; }
+.constellation-wrap.is-offscreen .pulses { visibility: hidden; }
+@media (prefers-reduced-motion: reduce) {
+  .constellation .pulses { display: none; }
+  html.js .constellation-wrap .edge, html.js .constellation-wrap .nodes .pop { animation: none !important; opacity: 1; stroke-dashoffset: 0; }
+  html.js .constellation-wrap .edge:not(.flow) { stroke-dasharray: none; }
+}
+
+/* ---------- constellation depth (2026-09-05): perspective, idle drift, pointer tilt, parallax layer ---------- */
+.map { perspective: 1100px; }
+.map .tilt { transform-style: preserve-3d; transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); will-change: transform; }
+.map .drift { position: relative; transform-style: preserve-3d; animation: drift 16s ease-in-out infinite; }
+@keyframes drift { 0%, 100% { transform: rotateX(5deg) rotateY(-7deg) translateZ(0); } 50% { transform: rotateX(-4deg) rotateY(7deg) translateZ(6px); } }
+.map .depth { position: absolute; inset: 0; width: 100%; height: auto; transform: translateZ(-60px) scale(1.03); opacity: 0.32; filter: blur(0.7px); pointer-events: none; overflow: visible; }
+.map .depth line { stroke: var(--ink-3); stroke-opacity: 0.5; stroke-width: 1.2; }
+.map .depth circle { fill: none; stroke: var(--ink-3); stroke-opacity: 0.35; stroke-width: 1; }
+.map svg.constellation { position: relative; transform: translateZ(0); }
+.map .tilt .halo { transform: translate(-50%, -50%) translateZ(40px); }
+.constellation-wrap.is-offscreen .drift { animation-play-state: paused; }
+html.is-hidden .constellation-wrap .drift { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) {
+  .map .drift { animation: none; transform: none; }
+  .map .tilt { transform: none !important; transition: none; }
+  .map .depth { transform: translateZ(-30px); }
+}

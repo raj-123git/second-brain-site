@@ -81,12 +81,12 @@
           "id": "sales-tool",
           "title": "Comparison and presentation tool for the sales conversation",
           "approved": true,
-          "content": "<p>A presentation tool for comparing heating and cooling systems on the three things a customer actually feels: comfort, efficiency and sound. One self-contained HTML file for a tablet, with embedded photos, drawings and unit sound demos calibrated so the differences you hear are proportionally real, a comfort-and-performance ladder that builds as you add systems, plain-language explainers on right-sizing, humidity and warranties, and a one-tap PDF summary the customer can take away. Built by a salesperson for the sales conversation; it works offline and travels by AirDrop.</p>",
+          "content": "<dl class=\"facts\"><div><dt>Problem</dt><dd>A customer feels comfort, efficiency and sound, not specifications.</dd></div><div><dt>What it does</dt><dd>One self-contained HTML file for a tablet: photos, drawings, calibrated sound demos, a comfort-and-performance ladder, plain-language explainers and a one-tap PDF summary.</dd></div><div><dt>The rule</dt><dd>Built by a salesperson for the sales conversation; it works offline and travels by AirDrop.</dd></div><div><dt>Evidence</dt><dd>The sound demos are calibrated so the differences you hear are proportionally real.</dd></div></dl><p>A presentation tool for comparing heating and cooling systems on the three things a customer actually feels: comfort, efficiency and sound. One self-contained HTML file for a tablet, with embedded photos, drawings and unit sound demos calibrated so the differences you hear are proportionally real, a comfort-and-performance ladder that builds as you add systems, plain-language explainers on right-sizing, humidity and warranties, and a one-tap PDF summary the customer can take away. Built by a salesperson for the sales conversation; it works offline and travels by AirDrop.</p>",
           "ledger_rows": [
             38,
             5
           ],
-          "queue_row": 7,
+          "queue_row": 33,
           "links": [
             [
               "Design notes + diagram",
@@ -98,12 +98,12 @@
           "id": "field-app",
           "title": "Field app with a 3D crew packet",
           "approved": true,
-          "content": "<p>A single-purpose iPad app for the sales appointment, built for my own day job. It replaces the paper comfort-survey booklet with a seven-step flow: the job, a 35-question comfort survey, an observation sheet for the existing equipment and ductwork, typed tape-measure dimensions, a live rotatable 3D model built from those numbers, a 16-shot photo set and an optional signature. It exports one self-contained crew packet the install team can review remotely, which removes the separate pre-install walkthrough. It runs fully offline with no backend, and it has two honesty rules I refuse to improve away: photos never generate the 3D, and a blank field stays visibly blank rather than being guessed.</p>",
+          "content": "<dl class=\"facts\"><div><dt>Problem</dt><dd>A paper comfort-survey booklet and a separate pre-install walkthrough.</dd></div><div><dt>What it does</dt><dd>A seven-step iPad flow: the job, a 35-question survey, an observation sheet, typed dimensions, a live rotatable 3D model built from those numbers, a 16-shot photo set, an optional signature, one crew packet the install team reviews remotely.</dd></div><div><dt>The rule</dt><dd>Photos never generate the 3D, and a blank field stays visibly blank rather than being guessed.</dd></div><div><dt>Evidence</dt><dd>Runs fully offline with no backend; the separate pre-install walkthrough is gone.</dd></div></dl><p>A single-purpose iPad app for the sales appointment, built for my own day job. It replaces the paper comfort-survey booklet with a seven-step flow: the job, a 35-question comfort survey, an observation sheet for the existing equipment and ductwork, typed tape-measure dimensions, a live rotatable 3D model built from those numbers, a 16-shot photo set and an optional signature. It exports one self-contained crew packet the install team can review remotely, which removes the separate pre-install walkthrough. It runs fully offline with no backend, and it has two honesty rules I refuse to improve away: photos never generate the 3D, and a blank field stays visibly blank rather than being guessed.</p>",
           "ledger_rows": [
             47,
             5
           ],
-          "queue_row": 22,
+          "queue_row": 34,
           "links": [
             [
               "Design notes + diagram",
@@ -115,12 +115,12 @@
           "id": "backorder",
           "title": "Backorder Buster",
           "approved": true,
-          "content": "<p>Backorder Buster, a small automation for my day job that attacks the most expensive surprise in a sales pipeline: a unit that is sold, scheduled and then turns out to be backordered. It signs in to the distributor portal with a captured session, checks the availability of every model on the upcoming installs, classifies each one as in stock, low stock, backordered or restricted, and emails a short report before the install date is at risk, so a model can be swapped or a customer warned while there is still time. Built because I was the person who had to make that phone call.</p>",
+          "content": "<dl class=\"facts\"><div><dt>Problem</dt><dd>A unit that is sold, scheduled and then turns out to be backordered.</dd></div><div><dt>What it does</dt><dd>Checks the availability of every model on the upcoming installs and classifies each as in stock, low stock, backordered or restricted.</dd></div><div><dt>The rule</dt><dd>A short emailed report lands before the install date is at risk, while a swap or a warning is still possible.</dd></div><div><dt>Evidence</dt><dd>Built because I was the person who had to make that phone call.</dd></div></dl><p>Backorder Buster, a small automation for my day job that attacks the most expensive surprise in a sales pipeline: a unit that is sold, scheduled and then turns out to be backordered. It signs in to the distributor portal with a captured session, checks the availability of every model on the upcoming installs, classifies each one as in stock, low stock, backordered or restricted, and emails a short report before the install date is at risk, so a model can be swapped or a customer warned while there is still time. Built because I was the person who had to make that phone call.</p>",
           "ledger_rows": [
             46,
             5
           ],
-          "queue_row": 23,
+          "queue_row": 35,
           "links": [
             [
               "Design notes + diagram",
@@ -138,8 +138,8 @@
             13
           ],
           "approved": true,
-          "content": "<p>Voice-to-structured-action layer for a field-service operations system. A seven-assistant squad: one call-taker greets, withholds the caller's name until confirmed, triages urgency from a per-trade knowledge pack, and hands off to six specialists. The voice platform's 30-second budget per tool call forced a split: anything on the conversational path runs in-process against the database; slower work falls to a workflow engine behind a 25-second abort. Caller identity comes from telephony metadata and overwrites whatever the model supplies; a booking exists only when a row is written. A weekly text-simulation harness runs three scripted scenarios across 18 trades; the latest run passed 18 of 18.</p>",
-          "queue_row": 8,
+          "content": "<dl class=\"facts\"><div><dt>Problem</dt><dd>A live caller will not wait, and the voice platform allows 30 seconds per tool call.</dd></div><div><dt>What it does</dt><dd>A seven-assistant squad: one call-taker greets, triages urgency from a per-trade knowledge pack and hands off to six specialists.</dd></div><div><dt>The rule</dt><dd>Conversational work runs in-process; slower work goes to a workflow engine behind a 25-second abort; a booking exists only when a row is written; caller identity comes from telephony metadata, never from the model.</dd></div><div><dt>Evidence</dt><dd>A weekly text-simulation harness runs three scripted scenarios across 18 trades; the latest run passed 18 of 18.</dd></div></dl><p>Voice-to-structured-action layer for a field-service operations system. A seven-assistant squad: one call-taker greets, withholds the caller's name until confirmed, triages urgency from a per-trade knowledge pack, and hands off to six specialists. The voice platform's 30-second budget per tool call forced a split: anything on the conversational path runs in-process against the database; slower work falls to a workflow engine behind a 25-second abort. Caller identity comes from telephony metadata and overwrites whatever the model supplies; a booking exists only when a row is written. A weekly text-simulation harness runs three scripted scenarios across 18 trades; the latest run passed 18 of 18.</p>",
+          "queue_row": 36,
           "links": [
             [
               "Design notes + diagram",
@@ -151,13 +151,13 @@
           "id": "scheduling-workorders",
           "title": "Scheduling and work orders",
           "approved": true,
-          "content": "<p>Scheduling and work-order agents. One workflow-engine agent books, reschedules and cancels appointments against existing bookings; the other turns a won job into a work order that a manager must review before the scheduling and billing handoffs fire. Every request passes authentication, a role check and per-tenant task toggles; installation, inspection, callback and emergency bookings are held for human approval. The voice channel offers slots filtered against existing appointments and has a review-first mode for busy periods. A daily automated check exercises 14 agents' write paths and asserts a row persisted; the last seven runs passed 14 of 14. Dispatch recommendations remain stubs.</p>",
+          "content": "<dl class=\"facts\"><div><dt>Problem</dt><dd>An agent that books real teams can overwrite people, breach permissions or fire billing early.</dd></div><div><dt>What it does</dt><dd>One agent books, reschedules and cancels against existing bookings; another turns a won job into a work order a manager reviews before the scheduling and billing handoffs fire.</dd></div><div><dt>The rule</dt><dd>Authentication, a role check and per-tenant task toggles on every request; installation, inspection, callback and emergency bookings are held for human approval.</dd></div><div><dt>Evidence</dt><dd>A daily automated check exercises 14 agents' write paths and asserts a row persisted; the last seven runs passed 14 of 14. Dispatch recommendations remain stubs.</dd></div></dl><p>Scheduling and work-order agents. One workflow-engine agent books, reschedules and cancels appointments against existing bookings; the other turns a won job into a work order that a manager must review before the scheduling and billing handoffs fire. Every request passes authentication, a role check and per-tenant task toggles; installation, inspection, callback and emergency bookings are held for human approval. The voice channel offers slots filtered against existing appointments and has a review-first mode for busy periods. A daily automated check exercises 14 agents' write paths and asserts a row persisted; the last seven runs passed 14 of 14. Dispatch recommendations remain stubs.</p>",
           "ledger_rows": [
             43,
             9,
             13
           ],
-          "queue_row": 9,
+          "queue_row": 37,
           "links": [
             [
               "Design notes + state diagram",
@@ -169,12 +169,12 @@
           "id": "permit-lifecycle",
           "title": "Permit and inspection lifecycle",
           "approved": true,
-          "content": "<p>Permit-and-inspection lifecycle agent. One webhook entry point routes six actions behind authentication and role checks; permit status is an explicit state machine that spans inspection scheduling and results, unknown actions return 400, and a locked design rule says nothing is ever auto-submitted. A headless-browser sidecar, memory-capped and loopback-only, with form filling, CAPTCHA detection and a WebSocket hand-off to a human, is built and health-checked, but no workflow calls it yet and only test screenshots exist. What runs today is record creation plus a deterministic permit-required decision, exercised by a daily automated check.</p>",
+          "content": "<dl class=\"facts\"><div><dt>Problem</dt><dd>Permits and inspections are local, slow and unforgiving of a missed step.</dd></div><div><dt>What it does</dt><dd>One webhook entry point routes six actions; permit status is an explicit state machine that spans inspection scheduling and results.</dd></div><div><dt>The rule</dt><dd>Nothing is ever auto-submitted; unknown actions return 400.</dd></div><div><dt>Evidence</dt><dd>Record creation and a deterministic permit-required decision run today under a daily check; the headless-browser sidecar is built and health-checked but no workflow calls it yet.</dd></div></dl><p>Permit-and-inspection lifecycle agent. One webhook entry point routes six actions behind authentication and role checks; permit status is an explicit state machine that spans inspection scheduling and results, unknown actions return 400, and a locked design rule says nothing is ever auto-submitted. A headless-browser sidecar, memory-capped and loopback-only, with form filling, CAPTCHA detection and a WebSocket hand-off to a human, is built and health-checked, but no workflow calls it yet and only test screenshots exist. What runs today is record creation plus a deterministic permit-required decision, exercised by a daily automated check.</p>",
           "ledger_rows": [
             42,
             13
           ],
-          "queue_row": 10,
+          "queue_row": 38,
           "links": [
             [
               "Design notes + diagram",
@@ -186,12 +186,12 @@
           "id": "post-job-followup",
           "title": "Post-job follow-up: accounting, reviews, referrals",
           "approved": true,
-          "content": "<p>Post-job follow-up agents, the pair I am most pleased with because the timing is the product. An accounting agent creates invoices, reports collections, and exposes four payment-exception types through a manager-only action. A review-and-referral agent is triggered by an invoice-paid-in-full event or a daily scan of completed work; a per-trade playbook supplies the ask timing, and suppression rules cap requests at two attempts with a 48-hour minimum gap, logging the reason for every suppression. Every complaint type is flagged for a human; none auto-resolves. A composite sequence is designed to wait 48 hours before the review ask and seven days before the referral touch; that sequence has not yet run.</p>",
+          "content": "<dl class=\"facts\"><div><dt>Problem</dt><dd>A badly timed follow-up annoys a customer; an unflagged payment exception leaks margin.</dd></div><div><dt>What it does</dt><dd>An accounting agent creates invoices, reports collections and exposes four payment-exception types to a manager; a review-and-referral agent is triggered by an invoice paid in full or a daily scan of completed work.</dd></div><div><dt>The rule</dt><dd>At most two asks with a 48-hour minimum gap, every suppression logged; every complaint type goes to a human, none auto-resolves.</dd></div><div><dt>Evidence</dt><dd>The composite sequence, 48 hours before the review ask and seven days before the referral touch, is designed and has not yet run.</dd></div></dl><p>Post-job follow-up agents, the pair I am most pleased with because the timing is the product. An accounting agent creates invoices, reports collections, and exposes four payment-exception types through a manager-only action. A review-and-referral agent is triggered by an invoice-paid-in-full event or a daily scan of completed work; a per-trade playbook supplies the ask timing, and suppression rules cap requests at two attempts with a 48-hour minimum gap, logging the reason for every suppression. Every complaint type is flagged for a human; none auto-resolves. A composite sequence is designed to wait 48 hours before the review ask and seven days before the referral touch; that sequence has not yet run.</p>",
           "ledger_rows": [
             44,
             13
           ],
-          "queue_row": 11,
+          "queue_row": 39,
           "links": [
             [
               "Design notes + diagram",
@@ -203,14 +203,14 @@
           "id": "safety-layer",
           "title": "Safety layers for unattended operation",
           "approved": true,
-          "content": "<p>Two safety layers for unattended operation. A content pipeline where a scheduled writer drafts and self-scores short posts, then submits them to a deterministic code gate (blocklist, banned claims, a stat whitelist with inline sourcing, no personal attribution, a quality floor) before anything publishes; a one-call kill switch returns it to human approval. Beneath it, a separate outbound guard for email: two hardcoded invariants no configuration can weaken (one forbids contact with a restricted party), HMAC clearances the transport demands, an append-only ledger, and a post-send sentinel. 119 tests; two independent adversarial review rounds found 25 issues before deployment.</p>",
+          "content": "<dl class=\"facts\"><div><dt>Problem</dt><dd>An unattended system that publishes or emails can leak, overreach or embarrass.</dd></div><div><dt>What it does</dt><dd>A content pipeline behind a deterministic code gate (blocklist, banned claims, a stat whitelist with sourcing, no personal attribution, a quality floor) with a one-call kill switch; beneath it, a separate outbound guard for email.</dd></div><div><dt>The rule</dt><dd>Two hardcoded invariants no configuration can weaken, HMAC clearances the transport demands, an append-only ledger and a post-send sentinel.</dd></div><div><dt>Evidence</dt><dd>119 tests; two independent adversarial review rounds found 25 issues before deployment.</dd></div></dl><p>Two safety layers for unattended operation. A content pipeline where a scheduled writer drafts and self-scores short posts, then submits them to a deterministic code gate (blocklist, banned claims, a stat whitelist with inline sourcing, no personal attribution, a quality floor) before anything publishes; a one-call kill switch returns it to human approval. Beneath it, a separate outbound guard for email: two hardcoded invariants no configuration can weaken (one forbids contact with a restricted party), HMAC clearances the transport demands, an append-only ledger, and a post-send sentinel. 119 tests; two independent adversarial review rounds found 25 issues before deployment.</p>",
           "ledger_rows": [
             14,
             15,
             45,
             13
           ],
-          "queue_row": 12,
+          "queue_row": 40,
           "links": [
             [
               "Test excerpt (29 of 119)",
@@ -235,8 +235,8 @@
             13
           ],
           "approved": true,
-          "content": "<p>Verification I trust more than reports. A green test suite that shares a predicate with the code cannot falsify it, so I delete each gate in turn and watch which tests still pass; on the email guard that found four sub-checks that could be removed with zero failures, and they now assert behaviour. A daily smoke check fires each agent's main write and asserts a real row landed, not a success flag. A weekly voice harness replays scripted callers across 18 trades with an independent judge, recalibrated once after it scored a safety-first emergency redirect as a failure. Done means an external effect a separate checker verified.</p>",
-          "queue_row": 13,
+          "content": "<dl class=\"facts\"><div><dt>Problem</dt><dd>A green test suite that shares a predicate with the code cannot falsify it.</dd></div><div><dt>What it does</dt><dd>Delete each gate in turn and watch which tests still pass; a daily smoke check fires each agent's main write and asserts a real row landed; a weekly voice harness replays scripted callers across 18 trades with an independent judge.</dd></div><div><dt>The rule</dt><dd>Done means an external effect a separate checker verified.</dd></div><div><dt>Evidence</dt><dd>The delete-each-gate pass found four sub-checks removable with zero failures, now asserting behaviour; the judge was recalibrated once after scoring a safety-first emergency redirect as a failure.</dd></div></dl><p>Verification I trust more than reports. A green test suite that shares a predicate with the code cannot falsify it, so I delete each gate in turn and watch which tests still pass; on the email guard that found four sub-checks that could be removed with zero failures, and they now assert behaviour. A daily smoke check fires each agent's main write and asserts a real row landed, not a success flag. A weekly voice harness replays scripted callers across 18 trades with an independent judge, recalibrated once after it scored a safety-first emergency redirect as a failure. Done means an external effect a separate checker verified.</p>",
+          "queue_row": 41,
           "links": [
             [
               "Fleet smoke harness",
@@ -276,9 +276,9 @@
         16,
         19
       ],
-      "approved": false,
-      "queue_row": null,
-      "content": ""
+      "approved": true,
+      "queue_row": 43,
+      "content": "<p>I define the problem, the workflow, the acceptance criteria and the human gates; I direct AI to build it, then verify the result against the running system rather than trusting a report that says it works.</p>"
     },
     {
       "id": "life",

@@ -28,6 +28,8 @@ const rows = (r?: number[]) => (r && r.length ? r.join(", ") : "none");
 // string below is a slice of approved queue text, so the publication firewall is untouched.
 const SENT = /(?<=[.!?])\s+(?=[A-Z"\u201c(])/;
 function teaser(html: string): { lead: string; rest: string } {
+  const facts = /^\s*(<dl[\s\S]*?<\/dl>)([\s\S]*)$/.exec(html);
+  if (facts) return { lead: facts[1], rest: facts[2].trim() };
   const m = /^\s*<p([^>]*)>([\s\S]*?)<\/p>([\s\S]*)$/.exec(html);
   if (!m) return { lead: html, rest: "" };
   const [, attrs, inner, after] = m;
@@ -115,9 +117,8 @@ const view = rest.map((s, i) => ({
           <div class="grid">
             {cards.map(a => (
               <article class="card" id={`artifact-${a.id}`}>
-                <div class="card-art"><Icon name={ART_ICON[a.id] ?? "artifact"} /></div>
+                <div class="card-head"><span class="card-art"><Icon name={ART_ICON[a.id] ?? "artifact"} /></span><h3>{a.title}</h3></div>
                 <div>
-                  <h3>{a.title}</h3>
                   {a.approved && a.badges?.length && <p class="badges">{a.badges.map(b => <span>{b}</span>)}</p>}
                   {a.approved && a.content
                     ? <><Fragment set:html={teaser(a.content).lead} />{teaser(a.content).rest && <details class="more"><summary>More</summary><Fragment set:html={teaser(a.content).rest} /></details>}</>

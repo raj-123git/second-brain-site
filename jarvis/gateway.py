@@ -10,8 +10,8 @@ Runs ON THE VPS. Two entry points over the same pipeline:
       /opt/jarvis/venv/bin/uvicorn gateway:app --host 127.0.0.1 --port 8787
 
 Pipeline (docs/ARCHITECTURE.md §8):
-  text -> summarize (Ollama, local, $0) -> TTS (Kokoro CPU; Piper fallback; text-only fallback)
-       -> deliver (Telegram voice note via a DEDICATED bot; never the the platform bot) -> jsonl audit
+  text -> summarize (Ollama, local, $0) -> TTS (Microsoft Ava via edge-tts; Kokoro/Piper fallback; text-only fallback)
+       -> deliver (Telegram voice note via a DEDICATED bot; never the CrewForce bot) -> jsonl audit
 
 Modes: brief (~20-60 s spoken), detailed (~2-5 min), full (read the original).
 The briefing frame is fixed: what happened / did it work / what matters / needs Raj / next.
@@ -81,7 +81,35 @@ def summarize(text: str, mode: str, title: str = "") -> str:
 
 # ------------------------------------------------------------------------ tts --
 def tts(text: str, wav_path: Path) -> str:
-    """Return the backend used: kokoro | piper | none."""
+    """Return the backend used: edge | kokoro | piper | none."""
+    # Raj picked Microsoft Ava (2026-09-06, by ear from six samples): edge-tts is the open-source client
+    # for the Edge Read-Aloud endpoint. Free, no key, no account, but UNOFFICIAL: Microsoft can change it
+    # any day, so everything below this block stays as the automatic fallback. Text goes to Microsoft;
+    # briefs never carry secrets. Set JARVIS_TTS=piper to skip it.
+    if os.environ.get("JARVIS_TTS", "edge") == "edge":
+        mp3 = wav_path.with_suffix(".mp3")
+        try:
+            import asyncio
+            import edge_tts
+            voice = os.environ.get("EDGE_TTS_VOICE", "en-US-AvaNeural")
+            rate = os.environ.get("EDGE_TTS_RATE", "-10%")          # a calmer pace than the default
+
+            async def _speak() -> None:
+                await asyncio.wait_for(edge_tts.Communicate(text, voice, rate=rate).save(str(mp3)), timeout=90)
+
+            asyncio.run(_speak())
+            if not mp3.exists() or mp3.stat().st_size == 0:
+                raise RuntimeError("edge-tts wrote no audio (endpoint unreachable?)")
+            ff = shutil.which("ffmpeg")
+            if not ff:
+                raise RuntimeError("ffmpeg missing")
+            subprocess.run([ff, "-loglevel", "error", "-y", "-i", str(mp3), "-ar", "24000", "-ac", "1", str(wav_path)],
+                           check=True, timeout=120)
+            mp3.unlink(missing_ok=True)
+            return "edge"
+        except Exception as e:
+            print(f"[jarvis] edge unavailable ({type(e).__name__}: {e}); trying kokoro, then piper", file=sys.stderr)
+            mp3.unlink(missing_ok=True)
     try:
         import numpy as np
         import soundfile as sf

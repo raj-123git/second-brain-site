@@ -36,6 +36,7 @@ HOST = "rajranpariya.com"
 REPORTS = Path("/opt/jarvis/reports")
 LAUNCHED = Path("/opt/jarvis/seo-launched").exists()
 GSC_KEY = Path("/opt/jarvis/gsc-sa.json")
+REGISTERED = Path("/opt/jarvis/gsc-registered")   # property verified + sitemap submitted (2026-09-06)
 GATEWAY = ["/opt/jarvis/venv/bin/python", "/opt/jarvis/gateway.py"]
 UA = "rajranpariya-seo-agent/1.0 (+https://rajranpariya.com; owner check)"
 # Phrases that must never appear on the live page (mirror of the build gate's public-facing subset).
@@ -187,8 +188,12 @@ class Audit:
         s8, _, b8, _, _ = fetch(SITE + "/api/ask")
         self.ok("assistant alive", s8 == 200 and b'"ok":true' in b8.replace(b" ", b""), f"status {s8}", fail="WARN")
         # search console
-        self.add("search console", "PASS" if GSC_KEY.exists() else "INFO",
-                 "connected" if GSC_KEY.exists() else "not connected: Raj adds rajranpariya.com in Google Search Console + Bing and drops a service-account key at /opt/jarvis/gsc-sa.json")
+        if GSC_KEY.exists():
+            self.add("search console", "PASS", "API connected")
+        elif REGISTERED.exists():
+            self.add("search console", "INFO", "registered: property verified, sitemap submitted; live search data needs a service-account key at /opt/jarvis/gsc-sa.json")
+        else:
+            self.add("search console", "INFO", "not connected: Raj adds rajranpariya.com in Google Search Console + Bing and drops a service-account key at /opt/jarvis/gsc-sa.json")
         return {"ts": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"), "site": SITE, "launched": LAUNCHED,
                 "title": title, "rows": self.rows}
 
@@ -196,7 +201,8 @@ class Audit:
 def spoken(rep: dict, weekly: bool) -> str:
     rows = rep["rows"]
     n = {lvl: [r for r in rows if r["level"] == lvl] for lvl in ("PASS", "WARN", "FAIL", "INFO")}
-    parts = [f"SEO audit for rajranpariya dot com: {len(n['PASS'])} of {len(rows)} checks passed."]
+    graded = len(rows) - len(n["INFO"])   # INFO rows are notes, not checks
+    parts = [f"SEO audit for rajranpariya dot com: {len(n['PASS'])} of {graded} checks passed."]
     if n["FAIL"]:
         parts.append("Attention, " + f"{len(n['FAIL'])} failed: " + "; ".join(f"{r['name']}, {r['detail']}" for r in n["FAIL"][:4]) + ".")
     if n["WARN"]:

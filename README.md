@@ -28,7 +28,7 @@ flowchart LR
 | `site/functions/api/ask.js` | The public assistant: Cloudflare Pages Function on Workers AI, same origin, no key, no third-party script. Pre-filters greetings, location, personal, build-detail and rule-changing questions; post-filters every answer with the gate's own patterns. |
 | `scripts/build-knowledge.py` | Generates the assistant's entire world from approved slots only, plus the refusal regexes, at build time. `test_ask_filters.mjs` covers 32 cases. |
 | `site/functions/_middleware.js` + `api/traffic.js` | Coarse visit records (country, region, city, user-agent family; no IP, no cookie) into KV; read back by the weekly traffic agent with a bearer secret. |
-| `jarvis/gateway.py` | Text in, voice note out: local small-model summary, Piper text-to-speech, Telegram delivery through a dedicated bot; every brief audited to a JSONL file. |
+| `jarvis/gateway.py` | Text in, voice note out: local small-model summary, a Microsoft neural voice through edge-tts with Piper as the offline fallback, Telegram delivery through a dedicated bot; every brief audited to a JSONL file. |
 | `jarvis/hooks/claude-stop-hook.py` | A Claude Code Stop hook that ships a finished session's final message to the gateway, fire-and-forget, throttled. |
 | `jarvis/agents/` | The SEO audit agent (deterministic checks against the live site) and the weekly traffic report agent, plus their installer. |
 | `scripts/render-resume.sh`, `render-og.sh` | Headless-Chrome renders of the résumé PDF and the link-preview card. |
